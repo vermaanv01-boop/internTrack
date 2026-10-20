@@ -79,11 +79,13 @@ const updateUser = async (req, res) => {
     const { id } = req.params;
     const { name, email, password } = req.body;
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      { name, email, password },
-      { new: true },
-    );
+    const update = { name, email };
+
+    if (password !== undefined) {
+      update.password = await bcrypt.hash(password, 10);
+    }
+
+    const user = await User.findByIdAndUpdate(id, update, { new: true });
 
     res.status(200).json({
       message: "User updated successfully",

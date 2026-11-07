@@ -25,9 +25,16 @@ const registerUser = async (req, res) => {
       password: await bcrypt.hash(password, 10),
     });
 
+    const safeUser = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt || user.timestamp,
+    };
+
     res.status(201).json({
       message: "User registered successfully",
-      user,
+      user: safeUser,
     });
   } catch (error) {
     console.error("Error registering user", error);
@@ -61,9 +68,16 @@ const loginUser = async (req, res) => {
     };
     const token = generateToken(user._id);
 
+    const safeUser = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt || user.timestamp,
+    };
+
     res.status(200).json({
       message: "User logged in successfully",
-      user,
+      user: safeUser,
       token,
     });
   } catch (error) {
@@ -87,9 +101,18 @@ const updateUser = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(id, update, { new: true });
 
+    const safeUser = user
+      ? {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt || user.timestamp,
+        }
+      : undefined;
+
     res.status(200).json({
       message: "User updated successfully",
-      user,
+      user: safeUser,
     });
   } catch (error) {
     console.error("Error updating user", error);

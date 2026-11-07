@@ -228,7 +228,7 @@ const parseCreatePayload = (body) => {
     }
 
     if (Object.keys(errors).length > 0) {
-        throw new RequestValidationError({ errors });
+        throw new RequestValidationError(errors);
     }
 
     return data;
@@ -320,7 +320,7 @@ const parseUpdatePayload = (body) => {
     }
 
     if (Object.keys(errors).length > 0) {
-        throw new RequestValidationError({ errors });
+        throw new RequestValidationError(errors);
     }
 
     if (Object.keys(data).length === 0) {
@@ -408,7 +408,7 @@ const parseListQuery = (query) => {
     }
 
     if (Object.keys(errors).length > 0) {
-        throw new RequestValidationError({ errors });
+        throw new RequestValidationError(errors);
     }
 
     return { page, limit, status, search, sort };

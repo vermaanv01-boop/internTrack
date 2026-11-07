@@ -4,7 +4,6 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 
 dotenv.config();
-connectDB();
 
 const app = express();
 app.use(express.json());
@@ -16,6 +15,16 @@ app.get("/" , (req, res) => {
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+const startServer = async () => {
+    try {
+        await connectDB();
+    } catch (error) {
+        process.exit(1);
+    }
+
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+};
+
+startServer();

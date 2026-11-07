@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use("/api/users", userRoutes);
+app.use("/api/applications", applicationRoutes);
 
 app.get("/" , (req, res) => {
     res.send("Job Tracking API is running....");

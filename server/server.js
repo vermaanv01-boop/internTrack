@@ -44,6 +44,19 @@ app.get("/" , (req, res) => {
     res.send("Job Tracking API is running....");
 });
 
+app.use((error, req, res, next) => {
+    if (res.headersSent) {
+        return next(error);
+    }
+
+    if (error instanceof SyntaxError && error.status === 400 && "body" in error) {
+        return res.status(400).json({ message: "Invalid JSON payload" });
+    }
+
+    console.error("Unhandled server error", error);
+    return res.status(500).json({ message: "Server error" });
+});
+
 const port = process.env.PORT || 5000;
 
 const startServer = async () => {

@@ -1,18 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
   Bot, 
   Play, 
   CheckCircle2, 
-  HelpCircle, 
-  Award, 
   Send, 
-  AlertCircle, 
-  ArrowRight,
-  TrendingUp,
-  XCircle,
-  History,
-  Trash2,
-  RefreshCw
+  Trash2
 } from "lucide-react";
 import { resumeService, interviewPrepService } from "../services";
 import { EmptyState, LoadingState, Modal, Pagination } from "../components/common";
@@ -34,24 +26,17 @@ export const InterviewPrepPage = () => {
   const [answerText, setAnswerText] = useState("");
   const [evaluating, setEvaluating] = useState(false);
   const [answerError, setAnswerError] = useState("");
-  const [latestEvaluation, setLatestEvaluation] = useState(null);
   const [completionResult, setCompletionResult] = useState(null);
 
   // History state
   const [activeTab, setActiveTab] = useState("generate"); // "generate" | "live" | "history"
   const [history, setHistory] = useState([]);
-  const [historyPage, setHistoryPage] = useState(1);
   const [historyPagination, setHistoryPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [selectedSessionDetail, setSelectedSessionDetail] = useState(null);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
 
-  useEffect(() => {
-    loadResumes();
-    loadHistory(1);
-  }, []);
-
-  const loadResumes = async () => {
+  const loadResumes = useCallback(async () => {
     try {
       const res = await resumeService.list();
       const list = res.resumes || [];
@@ -65,21 +50,25 @@ export const InterviewPrepPage = () => {
     } catch (err) {
       console.error("Failed to load resumes", err);
     }
-  };
+  }, []);
 
-  const loadHistory = async (page = 1) => {
+  const loadHistory = useCallback(async (page = 1) => {
     setLoadingHistory(true);
     try {
       const res = await interviewPrepService.getHistory({ page, limit: 10 });
       setHistory(res.sessions || []);
       setHistoryPagination(res.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
-      setHistoryPage(page);
     } catch (err) {
       console.error("Failed to load session history", err);
     } finally {
       setLoadingHistory(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadResumes();
+    loadHistory(1);
+  }, [loadResumes, loadHistory]);
 
   const handleGenerate = async (e) => {
     e.preventDefault();
@@ -107,7 +96,6 @@ export const InterviewPrepPage = () => {
 
       setCurrentSession(res.session);
       setActiveQuestionIndex(0);
-      setLatestEvaluation(null);
       setCompletionResult(null);
       setActiveTab("live");
       loadHistory(1);
@@ -154,7 +142,6 @@ export const InterviewPrepPage = () => {
         answer: answerText.trim(),
       });
 
-      setLatestEvaluation(res.answer);
       setAnswerText("");
 
       // Update session locally
@@ -203,7 +190,7 @@ export const InterviewPrepPage = () => {
     try {
       await interviewPrepService.delete(deleteTargetId);
       setDeleteTargetId(null);
-      loadHistory(historyPage);
+      loadHistory(historyPagination.page);
     } catch (err) {
       alert(err.message || "Failed to delete session record");
     }

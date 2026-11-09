@@ -239,8 +239,34 @@ const serializeQuestion = (question) => {
     };
 };
 
+const serializeAnswer = (answer) => {
+    const raw = toPlainObject(answer) || {};
+    const providerType = raw.evaluationProviderType || null;
+
+    return {
+        questionId: raw.questionId || null,
+        answerText: raw.answerText || "",
+        submittedAt: raw.submittedAt || null,
+        score: Number.isFinite(Number(raw.score)) ? Number(raw.score) : null,
+        strengths: Array.isArray(raw.strengths) ? raw.strengths : [],
+        weaknesses: Array.isArray(raw.weaknesses) ? raw.weaknesses : [],
+        missingConcepts: Array.isArray(raw.missingConcepts) ? raw.missingConcepts : [],
+        improvementSuggestions: Array.isArray(raw.improvementSuggestions)
+            ? raw.improvementSuggestions
+            : [],
+        evaluationProvider: raw.evaluationProvider || null,
+        evaluationProviderType: providerType,
+        evaluationFallbackUsed: Boolean(raw.evaluationFallbackUsed),
+        evaluationFallbackReason: raw.evaluationFallbackReason || null,
+        evaluationMethod: providerType === "local"
+            ? "Deterministic local concept matching; not semantic AI evaluation."
+            : "Provider-reported answer evaluation.",
+    };
+};
+
 const serializeSessionSummary = (session) => {
     const raw = toPlainObject(session);
+    const answers = getSessionAnswers(raw);
 
     return {
         id: raw._id ? String(raw._id) : null,
@@ -251,6 +277,10 @@ const serializeSessionSummary = (session) => {
         company: raw.company || null,
         difficulty: raw.difficulty,
         questionCount: raw.questionCount || 0,
+        answeredCount: answers.length,
+        status: getSessionStatus(raw),
+        currentQuestionIndex: Number.isInteger(raw.currentQuestionIndex) ? raw.currentQuestionIndex : 0,
+        overallScore: Number.isFinite(Number(raw.overallScore)) ? Number(raw.overallScore) : null,
         categoriesCovered: Array.isArray(raw.categoriesCovered) ? raw.categoriesCovered : [],
         provider: raw.provider || null,
         providerType: raw.providerType || null,
@@ -262,6 +292,16 @@ const serializeSessionSummary = (session) => {
 
 const serializeSessionDetail = (session) => {
     const raw = toPlainObject(session);
+    const questions = getSessionQuestions(raw).map(serializeQuestion);
+    const answers = getSessionAnswers(raw).map(serializeAnswer);
+    const status = getSessionStatus(raw);
+    const currentQuestionIndex = Number.isInteger(raw.currentQuestionIndex) && raw.currentQuestionIndex >= 0
+        ? raw.currentQuestionIndex
+        : 0;
+    const answeredQuestionIds = answers.map((answer) => answer.questionId);
+    const currentQuestion = status === "in_progress" && currentQuestionIndex < questions.length
+        ? questions[currentQuestionIndex]
+        : null;
 
     return {
         id: raw._id ? String(raw._id) : null,
@@ -275,9 +315,19 @@ const serializeSessionDetail = (session) => {
         company: raw.company || null,
         difficulty: raw.difficulty,
         requestedDifficulty: raw.difficulty,
-        questions: Array.isArray(raw.questions) ? raw.questions.map(serializeQuestion) : [],
+        questions,
         categoriesCovered: Array.isArray(raw.categoriesCovered) ? raw.categoriesCovered : [],
-        questionCount: raw.questionCount || 0,
+        questionCount: raw.questionCount || questions.length,
+        status,
+        startedAt: raw.startedAt || null,
+        completedAt: raw.completedAt || null,
+        currentQuestionIndex,
+        currentQuestion,
+        answers,
+        answeredCount: answers.length,
+        answeredQuestionIds,
+        unansweredCount: Math.max(0, questions.length - answers.length),
+        overallScore: Number.isFinite(Number(raw.overallScore)) ? Number(raw.overallScore) : null,
         provider: raw.provider || null,
         providerType: raw.providerType || null,
         fallbackUsed: Boolean(raw.fallbackUsed),

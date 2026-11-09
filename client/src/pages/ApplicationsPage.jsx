@@ -33,7 +33,7 @@ export const ApplicationsPage = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
 
-  // Modals
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);

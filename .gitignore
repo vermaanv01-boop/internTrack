@@ -25,6 +25,10 @@ lerna-debug.log*
 # Local files
 *.local
 
+# Uploaded resumes and generated file storage
+server/storage/
+storage/
+
 # Editors and OS files
 .vscode/*
 !.vscode/extensions.json

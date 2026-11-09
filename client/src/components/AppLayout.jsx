@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -6,8 +5,7 @@ import {
   FileText, 
   Target, 
   Bot, 
-  LogOut,
-  Layers
+  LogOut
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 

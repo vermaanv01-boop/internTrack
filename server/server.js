@@ -46,6 +46,7 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/matching", matchingRoutes);
+app.use("/api/interview-prep", interviewPrepRoutes);
 
 app.get("/" , (req, res) => {
     res.send("Job Tracking API is running....");

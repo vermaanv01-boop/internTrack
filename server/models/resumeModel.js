@@ -63,4 +63,3 @@ resumeSchema.set("toJSON", {
 });
 
 module.exports = mongoose.model("Resume", resumeSchema);
-module.exports.MAX_FILE_SIZE = MAX_FILE_SIZE;

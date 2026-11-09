@@ -244,12 +244,17 @@ const serializeQuestion = (question) => {
 const serializeAnswer = (answer) => {
     const raw = toPlainObject(answer) || {};
     const providerType = raw.evaluationProviderType || null;
+    const score = raw.score === null || raw.score === undefined
+        ? null
+        : Number.isFinite(Number(raw.score))
+            ? Number(raw.score)
+            : null;
 
     return {
         questionId: raw.questionId || null,
         answerText: raw.answerText || "",
         submittedAt: raw.submittedAt || null,
-        score: Number.isFinite(Number(raw.score)) ? Number(raw.score) : null,
+        score,
         strengths: Array.isArray(raw.strengths) ? raw.strengths : [],
         weaknesses: Array.isArray(raw.weaknesses) ? raw.weaknesses : [],
         missingConcepts: Array.isArray(raw.missingConcepts) ? raw.missingConcepts : [],
@@ -282,7 +287,11 @@ const serializeSessionSummary = (session) => {
         answeredCount: answers.length,
         status: getSessionStatus(raw),
         currentQuestionIndex: Number.isInteger(raw.currentQuestionIndex) ? raw.currentQuestionIndex : 0,
-        overallScore: Number.isFinite(Number(raw.overallScore)) ? Number(raw.overallScore) : null,
+        overallScore: raw.overallScore === null || raw.overallScore === undefined
+            ? null
+            : Number.isFinite(Number(raw.overallScore))
+                ? Number(raw.overallScore)
+                : null,
         categoriesCovered: Array.isArray(raw.categoriesCovered) ? raw.categoriesCovered : [],
         provider: raw.provider || null,
         providerType: raw.providerType || null,
@@ -329,7 +338,11 @@ const serializeSessionDetail = (session) => {
         answeredCount: answers.length,
         answeredQuestionIds,
         unansweredCount: Math.max(0, questions.length - answers.length),
-        overallScore: Number.isFinite(Number(raw.overallScore)) ? Number(raw.overallScore) : null,
+        overallScore: raw.overallScore === null || raw.overallScore === undefined
+            ? null
+            : Number.isFinite(Number(raw.overallScore))
+                ? Number(raw.overallScore)
+                : null,
         provider: raw.provider || null,
         providerType: raw.providerType || null,
         fallbackUsed: Boolean(raw.fallbackUsed),

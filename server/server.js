@@ -42,6 +42,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/resumes", resumeRoutes);
 
 app.get("/" , (req, res) => {
     res.send("Job Tracking API is running....");

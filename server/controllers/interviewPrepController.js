@@ -600,6 +600,231 @@ const generateSession = async (req, res) => {
     }
 };
 
+const startSession = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ message: "Invalid session ID" });
+    }
+
+    try {
+        const session = await InterviewPrepSession.findOne({
+            _id: id,
+            user: req.user.id,
+        });
+
+        if (!session) {
+            return res.status(404).json({ message: "Interview preparation session not found" });
+        }
+
+        const status = getSessionStatus(session);
+        const answers = getSessionAnswers(session);
+        const questions = getSessionQuestions(session);
+
+        if (status === "completed") {
+            return res.status(409).json({ message: "Completed interviews cannot be restarted" });
+        }
+
+        if (status === "in_progress") {
+            return res.status(409).json({ message: "Interview has already been started" });
+        }
+
+        if (session.startedAt || session.completedAt || answers.length > 0 || session.currentQuestionIndex > 0) {
+            return res.status(409).json({
+                message: "Session state is inconsistent and cannot be started",
+            });
+        }
+
+        if (questions.length === 0) {
+            return res.status(409).json({ message: "Session has no questions to start" });
+        }
+
+        session.status = "in_progress";
+        session.startedAt = new Date();
+        session.completedAt = null;
+        session.currentQuestionIndex = 0;
+        session.answers = [];
+        session.overallScore = null;
+        await session.save();
+
+        return res.status(200).json({
+            session: serializeSessionDetail(session),
+        });
+    } catch (error) {
+        return handleControllerError(res, error, "Error starting interview preparation session");
+    }
+};
+
+const submitAnswer = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ message: "Invalid session ID" });
+    }
+
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const questionId = typeof body.questionId === "string" ? body.questionId.trim() : "";
+    const answerText = typeof body.answer === "string" ? body.answer.trim() : "";
+    const errors = {};
+
+    if (!questionId) {
+        errors.questionId = "Question ID is required";
+    } else if (typeof body.questionId !== "string") {
+        errors.questionId = "Question ID must be a string";
+    }
+
+    if (typeof body.answer !== "string") {
+        errors.answer = "Answer must be a string";
+    } else if (!answerText) {
+        errors.answer = "Answer is required";
+    } else if (answerText.length < MIN_ANSWER_LENGTH) {
+        errors.answer = `Answer must be at least ${MIN_ANSWER_LENGTH} characters`;
+    } else if (answerText.length > MAX_ANSWER_LENGTH) {
+        errors.answer = `Answer must not exceed ${MAX_ANSWER_LENGTH} characters`;
+    }
+
+    if (Object.keys(errors).length > 0) {
+        return res.status(400).json({
+            message: "Validation failed",
+            errors,
+        });
+    }
+
+    try {
+        const session = await InterviewPrepSession.findOne({
+            _id: id,
+            user: req.user.id,
+        });
+
+        if (!session) {
+            return res.status(404).json({ message: "Interview preparation session not found" });
+        }
+
+        const status = getSessionStatus(session);
+
+        if (status === "not_started") {
+            return res.status(409).json({
+                message: "Interview must be started before submitting answers",
+            });
+        }
+
+        if (status === "completed") {
+            return res.status(409).json({
+                message: "Completed interviews cannot accept new answers",
+            });
+        }
+
+        const questions = getSessionQuestions(session);
+        const question = questions.find((item) => getQuestionId(item) === questionId);
+
+        if (!question) {
+            return res.status(404).json({ message: "Question not found in this session" });
+        }
+
+        if (!Array.isArray(session.answers)) {
+            session.answers = [];
+        }
+
+        if (session.answers.some((answer) => answer.questionId === questionId)) {
+            return res.status(409).json({
+                message: "Answer for this question has already been submitted",
+            });
+        }
+
+        const evaluation = evaluateInterviewAnswer({
+            question: {
+                questionId: getQuestionId(question),
+                text: question.text,
+                category: question.category,
+                difficulty: question.difficulty,
+                keyConcepts: Array.isArray(question.keyConcepts) ? question.keyConcepts : [],
+                evaluationCriteria: Array.isArray(question.evaluationCriteria)
+                    ? question.evaluationCriteria
+                    : [],
+            },
+            answerText,
+        });
+        const answer = {
+            questionId,
+            answerText,
+            submittedAt: new Date(),
+            score: evaluation.score,
+            strengths: evaluation.strengths,
+            weaknesses: evaluation.weaknesses,
+            missingConcepts: evaluation.missingConcepts,
+            improvementSuggestions: evaluation.improvementSuggestions,
+            evaluationProvider: evaluation.evaluationProvider,
+            evaluationProviderType: evaluation.evaluationProviderType,
+            evaluationFallbackUsed: evaluation.evaluationFallbackUsed,
+            evaluationFallbackReason: evaluation.evaluationFallbackReason,
+        };
+
+        session.answers.push(answer);
+
+        const answeredQuestionIds = new Set(session.answers.map((item) => item.questionId));
+        const nextQuestionIndex = questions.findIndex((item) => (
+            !answeredQuestionIds.has(getQuestionId(item))
+        ));
+
+        session.currentQuestionIndex = nextQuestionIndex === -1
+            ? questions.length
+            : nextQuestionIndex;
+        await session.save();
+
+        return res.status(200).json({
+            answer: serializeAnswer(answer),
+            progress: buildAnswerProgress(session),
+        });
+    } catch (error) {
+        return handleControllerError(res, error, "Error submitting interview answer");
+    }
+};
+
+const completeSession = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ message: "Invalid session ID" });
+    }
+
+    try {
+        const session = await InterviewPrepSession.findOne({
+            _id: id,
+            user: req.user.id,
+        });
+
+        if (!session) {
+            return res.status(404).json({ message: "Interview preparation session not found" });
+        }
+
+        const status = getSessionStatus(session);
+
+        if (status === "completed") {
+            return res.status(409).json({ message: "Interview has already been completed" });
+        }
+
+        if (status === "not_started") {
+            return res.status(409).json({
+                message: "Interview must be started before it can be completed",
+            });
+        }
+
+        const result = buildCompletionResult(session);
+
+        session.status = "completed";
+        session.completedAt = new Date();
+        session.overallScore = result.overallScore;
+        await session.save();
+
+        return res.status(200).json({
+            session: serializeSessionDetail(session),
+            result,
+        });
+    } catch (error) {
+        return handleControllerError(res, error, "Error completing interview preparation session");
+    }
+};
+
 const listSessionHistory = async (req, res) => {
     try {
         const { page, limit, difficulty, search, sort } = parseHistoryQuery(req.query);

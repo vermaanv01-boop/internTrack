@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Hook export
+
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

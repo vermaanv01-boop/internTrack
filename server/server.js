@@ -6,6 +6,7 @@ const userRoutes = require("./routes/userRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
+const matchingRoutes = require("./routes/matchingRoutes");
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/resumes", resumeRoutes);
+app.use("/api/matching", matchingRoutes);
 
 app.get("/" , (req, res) => {
     res.send("Job Tracking API is running....");

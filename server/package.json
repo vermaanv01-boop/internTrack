@@ -20,19 +20,12 @@
     "mammoth": "^1.13.0",
     "mongoose": "^9.12.0",
     "multer": "^2.5.0",
-<<<<<<< HEAD
-    "pdf-parse": "^1.1.1"
-=======
     "pdf-parse": "^2.4.5"
->>>>>>> 69c54cf (adding resume api)
   },
   "devDependencies": {
     "jszip": "^3.10.1",
     "nodemon": "^3.1.14",
-<<<<<<< HEAD
-=======
     "pdfkit": "^0.17.2",
->>>>>>> 69c54cf (adding resume api)
     "supertest": "^7.1.4"
   }
 }

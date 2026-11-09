@@ -1,9 +1,5 @@
 const path = require("path");
-<<<<<<< HEAD
-const pdfParse = require("pdf-parse/lib/pdf-parse.js");
-=======
 const { PDFParse } = require("pdf-parse");
->>>>>>> 69c54cf (adding resume api)
 const mammoth = require("mammoth");
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -71,12 +67,6 @@ const normalizeExtractedText = (value) => {
 };
 
 const extractPdfText = async (buffer) => {
-<<<<<<< HEAD
-    try {
-        const result = await pdfParse(buffer);
-
-        if (!result || !Number.isFinite(result.numpages) || result.numpages < 1) {
-=======
     let parser;
 
     try {
@@ -84,7 +74,6 @@ const extractPdfText = async (buffer) => {
         const result = await parser.getText();
 
         if (!result || !Number.isFinite(result.total) || result.total < 1) {
->>>>>>> 69c54cf (adding resume api)
             throw emptyDocumentError("pdf");
         }
 
@@ -95,13 +84,10 @@ const extractPdfText = async (buffer) => {
         }
 
         throw emptyDocumentError("pdf");
-<<<<<<< HEAD
-=======
     } finally {
         if (parser) {
             await parser.destroy().catch(() => {});
         }
->>>>>>> 69c54cf (adding resume api)
     }
 };
 

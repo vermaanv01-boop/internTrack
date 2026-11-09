@@ -7,6 +7,7 @@ const applicationRoutes = require("./routes/applicationRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const matchingRoutes = require("./routes/matchingRoutes");
+const interviewPrepRoutes = require("./routes/interviewPrepRoutes");
 
 dotenv.config();
 

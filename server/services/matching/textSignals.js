@@ -22,17 +22,19 @@ const KEYWORD_STOP_WORDS = new Set([
     "ability", "able", "across", "additional", "advantage", "affirmative", "all",
     "applicant", "applicants", "application", "apply", "background", "benefit",
     "benefits", "candidate", "candidates", "company", "contributions", "degree",
-    "demonstrated", "description", "desired", "detail", "details", "duties",
-    "employment", "environment", "equal", "equivalent", "excellent", "expect",
-    "expected", "experience", "experienced", "familiarity", "familiar", "field",
-    "following", "following", "full", "highly", "including", "individual",
-    "industry", "knowledge", "looking", "minimum", "opportunity", "opportunities",
-    "position", "preferred", "qualification", "qualifications", "related",
-    "relevant", "responsible", "responsibilities", "solid", "strong", "skills",
-    "skill", "team", "teams", "technical", "time", "understanding", "work",
-    "working", "years", "year", "yrs", "plus", "nice", "must", "join", "help",
-    "ensure", "provide", "support", "based", "within", "well", "new", "day",
-    "daily", "part", "fulltime", "full-time", "remote", "hybrid", "onsite",
+    "bachelor", "doctorate", "master", "undergraduate", "entry", "junior",
+    "senior", "level", "demonstrated", "description", "desired", "detail",
+    "details", "duties", "employment", "environment", "equal", "equivalent",
+    "excellent", "expect", "expected", "experience", "experienced",
+    "familiarity", "familiar", "field", "following", "full", "highly",
+    "including", "individual", "industry", "knowledge", "looking", "minimum",
+    "opportunity", "opportunities", "position", "preferred", "qualification",
+    "qualifications", "related", "relevant", "responsible", "responsibilities",
+    "solid", "strong", "skills", "skill", "team", "teams", "technical", "time",
+    "understanding", "work", "working", "years", "year", "yrs", "plus", "nice",
+    "must", "join", "help", "ensure", "provide", "support", "based", "within",
+    "well", "new", "day", "daily", "part", "fulltime", "full-time", "remote",
+    "hybrid", "onsite",
 ]);
 
 const EXPERIENCE_SIGNAL_PATTERNS = [
@@ -244,8 +246,13 @@ const isMeaningfulToken = (token) => (
 
 const extractKeywordCandidates = (jobText) => {
     const normalized = normalizeText(jobText);
-    const tokens = normalized.match(/[a-z][a-z0-9+#.]*/g) || [];
-    const meaningful = tokens.filter(isMeaningfulToken);
+    const tokenPattern = /[a-z][a-z0-9+#]*(?:\.[a-z0-9+#]+)*/g;
+    const tokens = [...normalized.matchAll(tokenPattern)].map((match) => ({
+        token: match[0],
+        start: match.index,
+        end: match.index + match[0].length,
+    }));
+    const meaningful = tokens.filter((entry) => isMeaningfulToken(entry.token));
     const counts = new Map();
 
     const add = (term, multiplier) => {
@@ -256,12 +263,20 @@ const extractKeywordCandidates = (jobText) => {
         counts.set(key, current);
     };
 
-    for (const token of meaningful) {
-        add(token, 1);
+    for (const entry of meaningful) {
+        add(entry.token, 1);
     }
 
     for (let index = 0; index < meaningful.length - 1; index += 1) {
-        add(`${meaningful[index]} ${meaningful[index + 1]}`, 1.35);
+        const left = meaningful[index];
+        const right = meaningful[index + 1];
+        const gap = normalized.slice(left.end, right.start);
+
+        if (!/^[ \t]+$/.test(gap)) {
+            continue;
+        }
+
+        add(`${left.token} ${right.token}`, 1.35);
     }
 
     const sorted = [...counts.values()].sort((left, right) => (

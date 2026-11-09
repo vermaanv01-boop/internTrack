@@ -1,5 +1,3 @@
-/* Additional Component Styles */
-
 /* Auth Pages */
 .auth-wrapper {
   min-height: 100vh;
@@ -920,7 +918,8 @@
   font-size: 0.825rem;
 }
 
-.feedback-col ul, .suggestions-box ul {
+.feedback-col ul,
+.suggestions-box ul {
   padding-left: 16px;
   margin-top: 6px;
   display: flex;

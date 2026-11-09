@@ -262,3 +262,4 @@ test("E2E User Flow 2: Application CRUD, Filtering, and Isolation", async () => 
         .set("Authorization", `Bearer ${token1}`);
     assert.equal(getDeleted.status, 404);
 });
+

@@ -1,15 +1,18 @@
 const mongoose = require("mongoose");
 const InterviewPrepSession = require("../models/interviewPrepSessionModel");
 const Resume = require("../models/resumeModel");
-const { generateInterviewQuestions } = require("../services/interviewPrep");
+const { evaluateInterviewAnswer, generateInterviewQuestions } = require("../services/interviewPrep");
 const { DIFFICULTIES } = require("../services/interviewPrep/constants");
 
 const MIN_JOB_DESCRIPTION_LENGTH = 100;
 const MAX_JOB_DESCRIPTION_LENGTH = 30000;
+const MIN_ANSWER_LENGTH = 20;
+const MAX_ANSWER_LENGTH = 5000;
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 const SORT_ORDERS = ["newest", "oldest"];
+const SESSION_STATUSES = ["not_started", "in_progress", "completed"];
 const DISCLAIMER = "Interview questions are generated from the selected resume and job description. Review and adapt them before use.";
 
 class RequestValidationError extends Error {
@@ -139,6 +142,24 @@ const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const toPlainObject = (document) => (
     document && typeof document.toObject === "function" ? document.toObject() : document
+);
+
+const getSessionStatus = (session) => {
+    const status = session && session.status;
+
+    return SESSION_STATUSES.includes(status) ? status : "not_started";
+};
+
+const getSessionQuestions = (session) => (
+    Array.isArray(session && session.questions) ? session.questions : []
+);
+
+const getSessionAnswers = (session) => (
+    Array.isArray(session && session.answers) ? session.answers : []
+);
+
+const getQuestionId = (question) => (
+    question && typeof question.questionId === "string" ? question.questionId : null
 );
 
 const normalizeQuestion = (question, index) => {

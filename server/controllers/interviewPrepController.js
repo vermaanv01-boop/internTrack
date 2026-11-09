@@ -31,6 +31,8 @@ const cloneSnapshot = (value) => {
     return JSON.parse(JSON.stringify(value));
 };
 
+const uniqueStrings = (values) => [...new Set(values.filter(Boolean))];
+
 const parseOptionalMetadata = (value) => {
     if (value === undefined) {
         return { valid: true, value: undefined };

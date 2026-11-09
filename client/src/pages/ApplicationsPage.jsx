@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { 
-  Plus, 
-  Search, 
-  Trash2, 
-  Edit3, 
+import {
+  Plus,
+  Search,
+  Trash2,
+  Edit3,
   ExternalLink
 } from "lucide-react";
 import { applicationService } from "../services";
@@ -27,8 +27,8 @@ export const ApplicationsPage = () => {
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
-  // Filters & Search
+
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");

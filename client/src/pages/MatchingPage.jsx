@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
-  Target, 
   Sparkles, 
   CheckCircle2, 
   XCircle, 
   AlertCircle, 
-  History, 
   Trash2, 
-  ExternalLink,
   ChevronRight,
-  TrendingUp,
-  Award
+  TrendingUp
 } from "lucide-react";
 import { resumeService, matchingService } from "../services";
-import { ScoreBadge, EmptyState, LoadingState, Modal, Pagination } from "../components/common";
+import { EmptyState, LoadingState, Modal, Pagination } from "../components/common";
 
 export const MatchingPage = () => {
   const [resumes, setResumes] = useState([]);
@@ -28,19 +24,13 @@ export const MatchingPage = () => {
 
   // History Tab / Section
   const [history, setHistory] = useState([]);
-  const [historyPage, setHistoryPage] = useState(1);
   const [historyPagination, setHistoryPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [activeTab, setActiveTab] = useState("workspace"); // "workspace" | "history"
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
 
-  useEffect(() => {
-    loadResumes();
-    loadHistory(1);
-  }, []);
-
-  const loadResumes = async () => {
+  const loadResumes = useCallback(async () => {
     try {
       const res = await resumeService.list();
       const list = res.resumes || [];
@@ -54,21 +44,25 @@ export const MatchingPage = () => {
     } catch (err) {
       console.error("Failed to load resumes", err);
     }
-  };
+  }, []);
 
-  const loadHistory = async (page = 1) => {
+  const loadHistory = useCallback(async (page = 1) => {
     setLoadingHistory(true);
     try {
       const res = await matchingService.getHistory({ page, limit: 10 });
       setHistory(res.analyses || []);
       setHistoryPagination(res.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
-      setHistoryPage(page);
     } catch (err) {
       console.error("Failed to load match history", err);
     } finally {
       setLoadingHistory(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadResumes();
+    loadHistory(1);
+  }, [loadResumes, loadHistory]);
 
   const handleRunAnalysis = async (e) => {
     e.preventDefault();
@@ -119,7 +113,7 @@ export const MatchingPage = () => {
     try {
       await matchingService.deleteHistory(deleteId);
       setDeleteId(null);
-      loadHistory(historyPage);
+      loadHistory(historyPagination.page);
     } catch (err) {
       alert(err.message || "Failed to delete history item");
     }

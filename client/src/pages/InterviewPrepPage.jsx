@@ -288,6 +288,18 @@ export const InterviewPrepPage = () => {
                   onChange={(e) => setJobTitle(e.target.value)}
                 />
               </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="prep-company">Target Company (Optional)</label>
+                <input
+                  id="prep-company"
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Google or OpenAI"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="form-group">

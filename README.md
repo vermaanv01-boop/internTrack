@@ -34,6 +34,7 @@ Then set the values in `server/.env`:
 | `PORT` | No | API port; defaults to `5000` |
 | `MONGO_URL` | Yes | MongoDB connection string |
 | `JWT_SECRET` | Yes | Secret used to sign authentication tokens |
+| `RESUME_UPLOAD_DIR` | No | Private resume storage directory; defaults to `server/storage/resumes` |
 
 Do not commit `server/.env` or any other real environment file.
 
@@ -86,9 +87,17 @@ npm run lint
 | `POST` | `/api/users/login` | Log in and receive a token |
 | `PUT` | `/api/users/update/:id` | Update a user; requires a bearer token |
 | `POST` | `/api/users/logout` | Log out |
+| `POST` | `/api/resumes` | Upload a PDF or DOCX resume (`multipart/form-data`, field `resume`) |
+| `GET` | `/api/resumes` | List the authenticated user's resume versions |
+| `GET` | `/api/resumes/:id` | Get resume metadata |
+| `GET` | `/api/resumes/:id/download` | Download a stored resume |
+| `PATCH` | `/api/resumes/:id/activate` | Set the active resume version |
+| `DELETE` | `/api/resumes/:id` | Delete a resume and its stored file |
+
+All resume routes require `Authorization: Bearer <token>`. Uploaded files are stored under the private `server/storage/` directory (git-ignored), never in `client/` or any static/public directory.
 
 ## Current Notes
 
 - The frontend is currently the Vite starter UI and does not yet call the API.
-- The server has no automated test suite configured; `npm test` currently exits with an error placeholder.
+- Run server tests with `npm test` from `server/`.
 - Install dependencies separately in `server/` and `client/`.

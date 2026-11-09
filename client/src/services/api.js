@@ -118,7 +118,7 @@ export const request = async (endpoint, options = {}) => {
         return { blob, contentDisposition };
     }
 
-    let data = null;
+    let data;
     const contentType = response.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
         try {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { authService } from "../services";
 import { getToken } from "../services/api";
 
@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// Hook export
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

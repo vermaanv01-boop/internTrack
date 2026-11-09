@@ -44,6 +44,70 @@ const interviewQuestionSchema = new mongoose.Schema(
     },
 );
 
+const interviewAnswerSchema = new mongoose.Schema(
+    {
+        questionId: {
+            type: String,
+            required: [true, "Answer question ID is required"],
+            trim: true,
+        },
+        answerText: {
+            type: String,
+            required: [true, "Answer text is required"],
+            trim: true,
+            maxlength: [5000, "Answer must not exceed 5,000 characters"],
+        },
+        submittedAt: {
+            type: Date,
+            default: Date.now,
+        },
+        score: {
+            type: Number,
+            required: [true, "Answer score is required"],
+            min: [0, "Answer score must be between 0 and 100"],
+            max: [100, "Answer score must be between 0 and 100"],
+        },
+        strengths: {
+            type: [String],
+            default: [],
+        },
+        weaknesses: {
+            type: [String],
+            default: [],
+        },
+        missingConcepts: {
+            type: [String],
+            default: [],
+        },
+        improvementSuggestions: {
+            type: [String],
+            default: [],
+        },
+        evaluationProvider: {
+            type: String,
+            required: [true, "Evaluation provider is required"],
+            trim: true,
+        },
+        evaluationProviderType: {
+            type: String,
+            trim: true,
+            default: null,
+        },
+        evaluationFallbackUsed: {
+            type: Boolean,
+            default: false,
+        },
+        evaluationFallbackReason: {
+            type: String,
+            trim: true,
+            default: null,
+        },
+    },
+    {
+        _id: false,
+    },
+);
+
 const interviewPrepSessionSchema = new mongoose.Schema(
     {
         user: {
@@ -98,6 +162,42 @@ const interviewPrepSessionSchema = new mongoose.Schema(
             type: Number,
             min: 0,
             default: 0,
+        },
+        status: {
+            type: String,
+            enum: {
+                values: ["not_started", "in_progress", "completed"],
+                message: "Status must be not_started, in_progress, or completed",
+            },
+            default: "not_started",
+            index: true,
+        },
+        startedAt: {
+            type: Date,
+            default: null,
+        },
+        completedAt: {
+            type: Date,
+            default: null,
+        },
+        currentQuestionIndex: {
+            type: Number,
+            min: 0,
+            default: 0,
+            validate: {
+                validator: Number.isInteger,
+                message: "Current question index must be an integer",
+            },
+        },
+        answers: {
+            type: [interviewAnswerSchema],
+            default: [],
+        },
+        overallScore: {
+            type: Number,
+            min: [0, "Overall score must be between 0 and 100"],
+            max: [100, "Overall score must be between 0 and 100"],
+            default: null,
         },
         provider: {
             type: String,

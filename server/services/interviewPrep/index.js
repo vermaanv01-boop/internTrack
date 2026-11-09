@@ -1,10 +1,17 @@
 const localInterviewPrepProvider = require("./localInterviewPrepProvider");
+const localAnswerEvaluationProvider = require("./localEvaluationProvider");
 
 const DEFAULT_PROVIDER = "local";
 const FALLBACK_REASON = "The requested interview preparation provider was unavailable; deterministic local generation was used instead.";
+const DEFAULT_EVALUATION_PROVIDER = "local";
+const EVALUATION_FALLBACK_REASON = "The requested answer evaluation provider was unavailable; deterministic local concept matching was used instead.";
 
 const providers = {
     local: localInterviewPrepProvider,
+};
+
+const evaluationProviders = {
+    local: localAnswerEvaluationProvider,
 };
 
 const registerProvider = (name, provider) => {
@@ -17,6 +24,19 @@ const registerProvider = (name, provider) => {
 };
 
 const getInterviewPrepProvider = (name = DEFAULT_PROVIDER) => providers[name] || null;
+
+const registerEvaluationProvider = (name, provider) => {
+    if (!name || !provider || typeof provider.evaluate !== "function") {
+        throw new TypeError("An evaluation provider name and evaluate function are required.");
+    }
+
+    evaluationProviders[name] = provider;
+    return provider;
+};
+
+const getAnswerEvaluationProvider = (name = DEFAULT_EVALUATION_PROVIDER) => (
+    evaluationProviders[name] || null
+);
 
 const buildResult = (result, options) => ({
     questions: result.questions,

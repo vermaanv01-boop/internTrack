@@ -418,7 +418,7 @@ test("persists an immutable snapshot when the resume changes later", async () =>
 
     assert.equal(secondAnalysis.status, 200);
     assert.equal(store.length, 2);
-    assert.deepEqual(store[0], savedSnapshot);
+    assert.deepEqual(clone(store[0]), savedSnapshot);
     assert.notEqual(secondAnalysis.body.analysisId, firstAnalysis.body.analysisId);
 
     const detail = await getHistory(`/${firstAnalysis.body.analysisId}`);

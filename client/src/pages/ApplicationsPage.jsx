@@ -1,16 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
   Plus, 
   Search, 
-  Filter, 
   Trash2, 
   Edit3, 
-  ExternalLink, 
-  Building, 
-  MapPin, 
-  Calendar, 
-  DollarSign,
-  ChevronDown
+  ExternalLink
 } from "lucide-react";
 import { applicationService } from "../services";
 import { StatusBadge, EmptyState, LoadingState, Modal, Pagination } from "../components/common";
@@ -49,11 +43,7 @@ export const ApplicationsPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadApplications(pagination.page);
-  }, [statusFilter, sortOrder]);
-
-  const loadApplications = async (page = 1) => {
+  const loadApplications = useCallback(async (page = 1) => {
     setLoading(true);
     setError("");
     try {
@@ -73,7 +63,11 @@ export const ApplicationsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortOrder, statusFilter, search]);
+
+  useEffect(() => {
+    loadApplications(pagination.page);
+  }, [loadApplications, pagination.page]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -329,7 +323,7 @@ export const ApplicationsPage = () => {
             <Pagination
               page={pagination.page}
               totalPages={pagination.totalPages}
-              onPageChange={(p) => loadApplications(p)}
+              onPageChange={(p) => setPagination(prev => ({ ...prev, page: p }))}
             />
           </>
         )}

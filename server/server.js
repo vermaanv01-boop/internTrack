@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
+const resumeRoutes = require("./routes/resumeRoutes");
 
 dotenv.config();
 

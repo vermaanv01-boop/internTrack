@@ -50,7 +50,8 @@ const buildContext = ({ resumeText, jobDescription, jobTitle, company }) => {
         ...keywordAnalysis.missingKeywords.map((keyword) => keyword.keyword),
         ...keywordAnalysis.matchedKeywords.map((keyword) => keyword.keyword),
     ]);
-    const focusAreas = uniqueStrings([...sharedSkillNames, ...jobSkillNames, ...resumeSkillNames, ...keywordFocus]);
+    const technicalFocus = uniqueStrings([...sharedSkillNames, ...jobSkillNames, ...resumeSkillNames]);
+    const focusAreas = uniqueStrings([...technicalFocus, ...keywordFocus]);
     const resumeEvidence = experience.years > 0
         ? `${formatYears(experience.years)} years of experience`
         : education.level !== "none"
@@ -67,8 +68,11 @@ const buildContext = ({ resumeText, jobDescription, jobTitle, company }) => {
         sharedSkillNames,
         gapSkillNames,
         focusAreas,
+        technicalFocus,
         primaryFocus: focusAreas[0] || null,
         secondaryFocus: focusAreas[1] || null,
+        primaryTechnicalFocus: technicalFocus[0] || null,
+        secondaryTechnicalFocus: technicalFocus[1] || null,
         sharedFocus: sharedSkillNames[0] || null,
         resumeFocus: resumeSkillNames[0] || null,
         gapFocus: gapSkillNames[0] || null,
@@ -88,7 +92,7 @@ const buildContext = ({ resumeText, jobDescription, jobTitle, company }) => {
 
 const buildTechnicalQuestions = (context) => {
     const roleContext = context.jobTitle ? `the ${context.jobTitle} role` : "this role";
-    const depthFocus = context.secondaryFocus || context.primaryFocus;
+    const depthFocus = context.secondaryTechnicalFocus || context.primaryTechnicalFocus;
     const questions = [];
 
     if (context.sharedFocus) {

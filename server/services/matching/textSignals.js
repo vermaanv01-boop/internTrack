@@ -34,7 +34,7 @@ const KEYWORD_STOP_WORDS = new Set([
     "understanding", "work", "working", "years", "year", "yrs", "plus", "nice",
     "must", "join", "help", "ensure", "provide", "support", "based", "within",
     "well", "new", "day", "daily", "part", "fulltime", "full-time", "remote",
-    "hybrid", "onsite",
+    "hybrid", "onsite", "unit",
 ]);
 
 const EXPERIENCE_SIGNAL_PATTERNS = [

@@ -30,7 +30,13 @@ const SKILL_ALIAS_TOKENS = new Set();
 
 for (const skill of SKILL_INDEX) {
     for (const alias of skill.aliases) {
-        for (const token of alias.split(/[^a-z0-9+#]+/)) {
+        const normalizedAlias = alias.toLowerCase();
+
+        if (!/\s/.test(normalizedAlias)) {
+            SKILL_ALIAS_TOKENS.add(normalizedAlias);
+        }
+
+        for (const token of normalizedAlias.split(/[^a-z0-9+#]+/)) {
             if (token) {
                 SKILL_ALIAS_TOKENS.add(token);
             }

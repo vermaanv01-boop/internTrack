@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { 
   Briefcase, 
@@ -7,11 +7,8 @@ import {
   CheckCircle, 
   Award, 
   XCircle, 
-  TrendingUp, 
   ArrowRight,
-  PlusCircle,
-  FileSearch,
-  Bot
+  FileSearch
 } from "lucide-react";
 import { analyticsService } from "../services";
 import { StatusBadge, LoadingState, EmptyState } from "../components/common";
@@ -21,11 +18,7 @@ export const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -36,7 +29,11 @@ export const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [loadAnalytics]);
 
   if (loading) {
     return <LoadingState message="Aggregating your career analytics..." />;

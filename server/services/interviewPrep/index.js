@@ -106,11 +106,97 @@ const generateInterviewQuestions = (input, options = {}) => {
     }
 };
 
+const normalizeStringArray = (value) => (
+    Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : []
+);
+
+const buildEvaluationResult = (result, options) => {
+    const score = Number(result.score);
+
+    if (!Number.isFinite(score)) {
+        throw new Error("Answer evaluation provider returned an invalid score.");
+    }
+
+    return {
+        score: Math.min(100, Math.max(0, Math.round(score))),
+        strengths: normalizeStringArray(result.strengths),
+        weaknesses: normalizeStringArray(result.weaknesses),
+        missingConcepts: normalizeStringArray(result.missingConcepts),
+        improvementSuggestions: normalizeStringArray(result.improvementSuggestions),
+        evaluationProvider: options.provider,
+        evaluationProviderType: options.providerType,
+        evaluationFallbackUsed: options.fallbackUsed,
+        evaluationFallbackReason: options.fallbackUsed ? EVALUATION_FALLBACK_REASON : null,
+        evaluationMethod: typeof result.methodology === "string" && result.methodology.trim()
+            ? result.methodology.trim()
+            : "Provider-reported answer evaluation.",
+    };
+};
+
+const validateEvaluationResult = (result) => {
+    if (!result || typeof result !== "object" || !Number.isFinite(Number(result.score))) {
+        throw new Error("Answer evaluation provider returned an invalid result.");
+    }
+};
+
+const evaluateInterviewAnswer = (input, options = {}) => {
+    const requested = options.provider || DEFAULT_EVALUATION_PROVIDER;
+    const isProviderObject = requested && typeof requested === "object";
+    const requestedName = isProviderObject
+        ? requested.name || "custom"
+        : String(requested);
+    const provider = isProviderObject ? requested : getAnswerEvaluationProvider(requestedName);
+
+    if (!provider) {
+        const localResult = localAnswerEvaluationProvider.evaluate(input);
+
+        validateEvaluationResult(localResult);
+
+        return buildEvaluationResult(localResult, {
+            provider: localAnswerEvaluationProvider.name,
+            providerType: localAnswerEvaluationProvider.type,
+            fallbackUsed: true,
+        });
+    }
+
+    try {
+        const result = provider.evaluate(input);
+
+        validateEvaluationResult(result);
+
+        return buildEvaluationResult(result, {
+            provider: requestedName,
+            providerType: provider.type || "custom",
+            fallbackUsed: false,
+        });
+    } catch (error) {
+        if (provider === localAnswerEvaluationProvider) {
+            throw error;
+        }
+
+        const localResult = localAnswerEvaluationProvider.evaluate(input);
+
+        validateEvaluationResult(localResult);
+
+        return buildEvaluationResult(localResult, {
+            provider: localAnswerEvaluationProvider.name,
+            providerType: localAnswerEvaluationProvider.type,
+            fallbackUsed: true,
+        });
+    }
+};
+
 module.exports = {
+    DEFAULT_EVALUATION_PROVIDER,
     DEFAULT_PROVIDER,
+    EVALUATION_FALLBACK_REASON,
     FALLBACK_REASON,
+    evaluateInterviewAnswer,
+    evaluationProviders,
     generateInterviewQuestions,
+    getAnswerEvaluationProvider,
     getInterviewPrepProvider,
     providers,
+    registerEvaluationProvider,
     registerProvider,
 };

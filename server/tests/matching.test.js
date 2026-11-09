@@ -143,10 +143,12 @@ test("rejects resumes without usable extracted text", async () => {
 
     assert.equal(response.status, 400);
     assert.match(response.body.message, /usable extracted text/);
+    assert.equal(createdAnalyses.length, 0);
 });
 
-test("returns a deterministic explainable analysis", async () => {
+test("returns a deterministic explainable analysis and persists each result", async () => {
     resumeResult = {
+        _id: new mongoose.Types.ObjectId().toString(),
         extractedText: RESUME_TEXT,
         storedFilename: "private-file.pdf",
     };
@@ -157,6 +159,8 @@ test("returns a deterministic explainable analysis", async () => {
     assert.equal(first.status, 200);
     assert.equal(second.status, 200);
     assert.deepEqual(first.body, second.body);
+    assert.equal(first.body.analysisId, fixedAnalysisId);
+    assert.equal(first.body.id, fixedAnalysisId);
     assert.equal(first.body.provider, "local");
     assert.equal(typeof first.body.matchScore, "number");
     assert.equal(first.body.matchScore, second.body.matchScore);
@@ -177,6 +181,38 @@ test("returns a deterministic explainable analysis", async () => {
     assert.equal(first.body.educationAnalysis.fieldMatch, true);
     assert.equal(Object.hasOwn(first.body, "extractedText"), false);
     assert.equal(Object.hasOwn(first.body, "storedFilename"), false);
+    assert.equal(createdAnalyses.length, 2);
+    assert.equal(createdAnalyses[0].user, userId);
+    assert.equal(createdAnalyses[0].scoreLabel, first.body.matchLabel);
+    assert.deepEqual(createdAnalyses[0].partialMatches, first.body.relatedSkills);
+    assert.deepEqual(createdAnalyses[0].experienceAlignment, first.body.experienceAnalysis);
+    assert.deepEqual(createdAnalyses[0].educationAlignment, first.body.educationAnalysis);
+    assert.deepEqual(createdAnalyses[0].missingKeywords, first.body.keywordAnalysis.missingKeywords);
+});
+
+test("stores optional job title and company metadata with the snapshot", async () => {
+    const resumeId = new mongoose.Types.ObjectId().toString();
+    resumeResult = {
+        _id: resumeId,
+        extractedText: RESUME_TEXT,
+    };
+
+    const response = await postAnalysis({
+        jobDescription: JOB_DESCRIPTION,
+        resumeId,
+        jobTitle: "  Software Engineer  ",
+        company: "  InternTrack  ",
+    });
+
+    assert.equal(response.status, 200);
+    assert.equal(response.body.analysisId, fixedAnalysisId);
+    assert.equal(response.body.jobTitle, "Software Engineer");
+    assert.equal(response.body.company, "InternTrack");
+    assert.equal(createdAnalyses.length, 1);
+    assert.equal(createdAnalyses[0].resume, resumeId);
+    assert.equal(createdAnalyses[0].jobTitle, "Software Engineer");
+    assert.equal(createdAnalyses[0].company, "InternTrack");
+    assert.equal(createdAnalyses[0].jobDescription, JOB_DESCRIPTION);
 });
 
 test("checks explicit resume IDs against the authenticated user", async () => {

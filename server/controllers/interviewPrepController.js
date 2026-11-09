@@ -667,10 +667,10 @@ const submitAnswer = async (req, res) => {
     const answerText = typeof body.answer === "string" ? body.answer.trim() : "";
     const errors = {};
 
-    if (!questionId) {
-        errors.questionId = "Question ID is required";
-    } else if (typeof body.questionId !== "string") {
+    if (typeof body.questionId !== "string") {
         errors.questionId = "Question ID must be a string";
+    } else if (!questionId) {
+        errors.questionId = "Question ID is required";
     }
 
     if (typeof body.answer !== "string") {
@@ -911,8 +911,11 @@ const deleteSessionById = async (req, res) => {
 };
 
 module.exports = {
+    completeSession,
     deleteSessionById,
     generateSession,
     getSessionById,
     listSessionHistory,
+    startSession,
+    submitAnswer,
 };

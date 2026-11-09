@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 process.env.JWT_SECRET = "test-jwt-secret-for-matching-tests";
 
 const Resume = require("../models/resumeModel");
+const MatchingAnalysis = require("../models/matchingAnalysisModel");
 const matchingRoutes = require("../routes/matchingRoutes");
 const { analyze } = require("../services/matching/localMatchingProvider");
 const { extractSkills } = require("../services/matching/skillMatcher");
@@ -42,20 +43,29 @@ const RESUME_TEXT = [
 ].join(" ");
 
 const originalFindOne = Resume.findOne;
+const originalCreate = MatchingAnalysis.create;
+const fixedAnalysisId = new mongoose.Types.ObjectId().toString();
 let resumeResult = null;
 let findOneCalls = [];
+let createdAnalyses = [];
 
 beforeEach(() => {
     resumeResult = null;
     findOneCalls = [];
+    createdAnalyses = [];
     Resume.findOne = async (filter) => {
         findOneCalls.push(filter);
         return resumeResult;
+    };
+    MatchingAnalysis.create = async (data) => {
+        createdAnalyses.push(data);
+        return { _id: fixedAnalysisId, ...data };
     };
 });
 
 after(() => {
     Resume.findOne = originalFindOne;
+    MatchingAnalysis.create = originalCreate;
 });
 
 const postAnalysis = (payload, options = {}) => {

@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { 
   UploadCloud, 
   FileText, 
   CheckCircle, 
   Download, 
-  Trash2, 
-  ShieldCheck, 
-  AlertCircle,
-  FileCheck2,
-  HardDrive
+  Trash2
 } from "lucide-react";
 import { resumeService } from "../services";
 import { EmptyState, LoadingState, Modal } from "../components/common";
@@ -23,11 +19,7 @@ export const ResumesPage = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    loadResumes();
-  }, []);
-
-  const loadResumes = async () => {
+  const loadResumes = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -38,7 +30,11 @@ export const ResumesPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadResumes();
+  }, [loadResumes]);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];

@@ -111,12 +111,12 @@ const buildTechnicalQuestions = (context) => {
                 "Identifies tradeoffs and a validation approach",
             ],
         });
-    } else if (context.primaryFocus) {
+    } else if (context.primaryTechnicalFocus) {
         questions.push({
-            text: `The job description emphasizes ${context.primaryFocus}, which is not clearly documented in your resume. Describe any transferable knowledge you have and how you would build the missing skill safely.`,
-            whyRelevant: `This tests how you reason about ${context.primaryFocus} without assuming experience the resume does not show.`,
+            text: `The job description emphasizes ${context.primaryTechnicalFocus}, which is not clearly documented in your resume. Describe any transferable knowledge you have and how you would build the missing skill safely.`,
+            whyRelevant: `This tests how you reason about ${context.primaryTechnicalFocus} without assuming experience the resume does not show.`,
             keyConcepts: [
-                `${context.primaryFocus} fundamentals`,
+                `${context.primaryTechnicalFocus} fundamentals`,
                 "transferable knowledge",
                 "a learning plan",
                 "boundaries and escalation",

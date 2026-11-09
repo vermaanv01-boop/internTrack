@@ -1,14 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
 import { 
-  Building2, 
-  Clock, 
-  MapPin, 
-  FileText, 
-  AlertCircle, 
-  CheckCircle2, 
-  Search,
-  ExternalLink 
+  Search
 } from "lucide-react";
 
 export const StatusBadge = ({ status }) => {

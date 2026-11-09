@@ -8,10 +8,7 @@ const request = require("supertest");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const JSZip = require("jszip");
-<<<<<<< HEAD
-=======
 const PDFDocument = require("pdfkit");
->>>>>>> 69c54cf (adding resume api)
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "interntrack-resumes-"));
 
@@ -133,37 +130,6 @@ const asUser = (requestBuilder, id = ownerId) => (
     requestBuilder.set("Authorization", `Bearer ${tokenFor(id)}`)
 );
 
-<<<<<<< HEAD
-const makePdf = (text = "Hello Resume") => {
-    const escapedText = text.replace(/[()\\]/g, (character) => `\\${character}`);
-    const stream = `BT /F1 24 Tf 72 720 Td (${escapedText}) Tj ET`;
-    const objects = [
-        "<< /Type /Catalog /Pages 2 0 R >>",
-        "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-        "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
-        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-        `<< /Length ${Buffer.byteLength(stream, "latin1")} >>\nstream\n${stream}\nendstream`,
-    ];
-    const offsets = [0];
-    let pdf = "%PDF-1.4\n";
-
-    objects.forEach((object, index) => {
-        offsets.push(Buffer.byteLength(pdf, "latin1"));
-        pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
-    });
-
-    const xrefOffset = Buffer.byteLength(pdf, "latin1");
-    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
-
-    for (let index = 1; index <= objects.length; index += 1) {
-        pdf += `${String(offsets[index]).padStart(10, "0")} 00000 n \n`;
-    }
-
-    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
-
-    return Buffer.from(pdf, "latin1");
-};
-=======
 const makePdf = (text = "Hello Resume") => new Promise((resolve, reject) => {
     const document = new PDFDocument({ size: "LETTER" });
     const chunks = [];
@@ -174,7 +140,6 @@ const makePdf = (text = "Hello Resume") => new Promise((resolve, reject) => {
     document.fontSize(18).text(text);
     document.end();
 });
->>>>>>> 69c54cf (adding resume api)
 
 const escapeXml = (value) => value.replace(/[<>&'"]/g, (character) => ({
     "<": "&lt;",
@@ -205,13 +170,6 @@ const makeDocx = async (text = "John Doe Resume") => {
     return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 };
 
-<<<<<<< HEAD
-const uploadPdf = (text = "Hello Resume", filename = "resume.pdf", id = ownerId) => (
-    asUser(request(app)
-        .post("/api/resumes")
-        .attach("resume", makePdf(text), { filename, contentType: "application/pdf" }), id)
-);
-=======
 const uploadPdf = async (text = "Hello Resume", filename = "resume.pdf", id = ownerId) => {
     const pdf = await makePdf(text);
 
@@ -219,7 +177,6 @@ const uploadPdf = async (text = "Hello Resume", filename = "resume.pdf", id = ow
         .post("/api/resumes")
         .attach("resume", pdf, { filename, contentType: "application/pdf" }), id);
 };
->>>>>>> 69c54cf (adding resume api)
 
 const cleartempDir = () => {
     for (const entry of fs.readdirSync(tempDir)) {
@@ -242,11 +199,7 @@ after(() => {
 });
 
 test("uploads a PDF, validates its content, extracts text, and stores it outside the response", async () => {
-<<<<<<< HEAD
-    const pdf = makePdf("Hello Resume");
-=======
     const pdf = await makePdf("Hello Resume");
->>>>>>> 69c54cf (adding resume api)
     const response = await uploadPdf("Hello Resume", "My Resume.PDF");
 
     assert.equal(response.status, 201);
@@ -347,19 +300,13 @@ test("rejects corrupted and disguised documents", async () => {
 
     const extensionMismatch = await asUser(request(app)
         .post("/api/resumes")
-<<<<<<< HEAD
-        .attach("resume", makePdf(), {
-=======
         .attach("resume", await makePdf(), {
->>>>>>> 69c54cf (adding resume api)
             filename: "resume.docx",
             contentType: "application/pdf",
         }));
 
     assert.equal(extensionMismatch.status, 400);
     assert.match(extensionMismatch.body.message, /does not match/);
-<<<<<<< HEAD
-=======
 
     const corruptedDocx = await asUser(request(app)
         .post("/api/resumes")
@@ -385,7 +332,6 @@ test("cleans up a written file when database persistence fails", async () => {
     const response = await uploadPdf("Cleanup Resume", "cleanup.pdf");
 
     assert.equal(response.status, 500);
->>>>>>> 69c54cf (adding resume api)
     assert.equal(store.length, 0);
     assert.equal(fs.readdirSync(tempDir).length, 0);
 });
@@ -436,15 +382,10 @@ test("switches the active resume", async () => {
 });
 
 test("downloads the resume securely without exposing storage paths", async () => {
-<<<<<<< HEAD
-    const pdf = makePdf("Downloadable Resume");
-    const uploadResponse = await uploadPdf("Downloadable Resume", "download.pdf");
-=======
     const pdf = await makePdf("Downloadable Resume");
     const uploadResponse = await asUser(request(app)
         .post("/api/resumes")
         .attach("resume", pdf, { filename: "download.pdf", contentType: "application/pdf" }));
->>>>>>> 69c54cf (adding resume api)
     const resumeId = uploadResponse.body.resume._id;
 
     const response = await asUser(request(app).get(`/api/resumes/${resumeId}/download`))
@@ -543,16 +484,10 @@ test("prevents path traversal through a tampered stored filename", async () => {
 
 test("requires authentication for every resume endpoint", async () => {
     const id = new mongoose.Types.ObjectId().toString();
-<<<<<<< HEAD
-
-    const responses = await Promise.all([
-        request(app).post("/api/resumes").attach("resume", makePdf(), { filename: "resume.pdf" }),
-=======
     const pdf = await makePdf();
 
     const responses = await Promise.all([
         request(app).post("/api/resumes").attach("resume", pdf, { filename: "resume.pdf" }),
->>>>>>> 69c54cf (adding resume api)
         request(app).get("/api/resumes"),
         request(app).get(`/api/resumes/${id}`),
         request(app).get(`/api/resumes/${id}/download`),

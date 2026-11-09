@@ -373,6 +373,135 @@ const handleControllerError = (res, error, context) => {
     return res.status(500).json({ message: "Server error" });
 };
 
+const buildCategoryPerformance = (session) => {
+    const questions = getSessionQuestions(session);
+    const answers = getSessionAnswers(session);
+    const answerMap = new Map(
+        answers
+            .filter((answer) => typeof answer.questionId === "string")
+            .map((answer) => [answer.questionId, answer]),
+    );
+    const categories = uniqueStrings(questions.map((question) => question.category));
+
+    return categories.map((category) => {
+        const categoryQuestions = questions.filter((question) => question.category === category);
+        const scores = [];
+        let attempted = 0;
+
+        for (const question of categoryQuestions) {
+            const answer = answerMap.get(getQuestionId(question));
+
+            if (!answer) {
+                continue;
+            }
+
+            attempted += 1;
+
+            const score = Number(answer.score);
+
+            if (Number.isFinite(score)) {
+                scores.push(score);
+            }
+        }
+
+        return {
+            category,
+            total: categoryQuestions.length,
+            attempted,
+            unanswered: categoryQuestions.length - attempted,
+            averageScore: scores.length > 0
+                ? Math.round(scores.reduce((total, score) => total + score, 0) / scores.length)
+                : null,
+        };
+    });
+};
+
+const calculateOverallScore = (answers) => {
+    const scores = answers
+        .map((answer) => Number(answer.score))
+        .filter((score) => Number.isFinite(score));
+
+    if (scores.length === 0) {
+        return 0;
+    }
+
+    return Math.round(scores.reduce((total, score) => total + score, 0) / scores.length);
+};
+
+const buildCompletionResult = (session) => {
+    const questions = getSessionQuestions(session);
+    const answers = getSessionAnswers(session);
+    const overallScore = calculateOverallScore(answers);
+    const categoryPerformance = buildCategoryPerformance(session);
+    const attemptedCategories = categoryPerformance.filter((category) => category.attempted > 0);
+    const strongestAreas = [...attemptedCategories]
+        .sort((left, right) => (
+            right.averageScore - left.averageScore || left.category.localeCompare(right.category)
+        ))
+        .slice(0, 3)
+        .map((category) => category.category);
+    const weakestAreas = [...attemptedCategories]
+        .sort((left, right) => (
+            left.averageScore - right.averageScore || left.category.localeCompare(right.category)
+        ))
+        .slice(0, 3)
+        .map((category) => category.category);
+    const answeredQuestionIds = uniqueStrings(answers.map((answer) => answer.questionId));
+    const answeredSet = new Set(answeredQuestionIds);
+    const unansweredQuestionIds = questions
+        .map(getQuestionId)
+        .filter((questionId) => questionId && !answeredSet.has(questionId));
+    const missingConcepts = uniqueStrings(answers.flatMap((answer) => (
+        Array.isArray(answer.missingConcepts) ? answer.missingConcepts : []
+    )));
+    const lowScoringTopics = attemptedCategories
+        .filter((category) => category.averageScore !== null && category.averageScore < 70)
+        .map((category) => `${category.category} concepts`);
+    const unattemptedTopics = categoryPerformance
+        .filter((category) => category.attempted === 0)
+        .map((category) => `${category.category} practice`);
+    const recommendedTopics = uniqueStrings([
+        ...missingConcepts,
+        ...lowScoringTopics,
+        ...unattemptedTopics,
+    ]).slice(0, 8);
+
+    return {
+        overallScore,
+        questionsAttempted: answers.length,
+        questionsUnanswered: Math.max(0, questions.length - answers.length),
+        attemptedQuestionIds: answeredQuestionIds,
+        unansweredQuestionIds,
+        categoryPerformance,
+        strongestAreas,
+        weakestAreas,
+        recommendedTopics: recommendedTopics.length > 0
+            ? recommendedTopics
+            : ["Timed answer practice and concise outcome summaries"],
+        recommendedTopicsToRevise: recommendedTopics.length > 0
+            ? recommendedTopics
+            : ["Timed answer practice and concise outcome summaries"],
+    };
+};
+
+const buildAnswerProgress = (session) => {
+    const questions = getSessionQuestions(session).map(serializeQuestion);
+    const answers = getSessionAnswers(session);
+    const currentQuestionIndex = Number.isInteger(session.currentQuestionIndex)
+        ? session.currentQuestionIndex
+        : 0;
+
+    return {
+        status: getSessionStatus(session),
+        questionCount: questions.length,
+        answeredCount: answers.length,
+        unansweredCount: Math.max(0, questions.length - answers.length),
+        currentQuestionIndex,
+        currentQuestion: currentQuestionIndex < questions.length ? questions[currentQuestionIndex] : null,
+        allQuestionsAnswered: answers.length >= questions.length,
+    };
+};
+
 const generateSession = async (req, res) => {
     const body = req.body && typeof req.body === "object" ? req.body : {};
     const jobDescription = typeof body.jobDescription === "string"

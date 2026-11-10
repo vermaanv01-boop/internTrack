@@ -14,6 +14,12 @@ const responseForValidationErrors = (res, errors) =>
     errors,
   });
 
+const responseForDuplicateEmail = (res) =>
+  res.status(400).json({
+    message: "User already exists",
+    errors: { email: "An account with this email already exists" },
+  });
+
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {
     const error = new Error("JWT_SECRET is not configured");
@@ -45,9 +51,7 @@ const registerUser = async (req, res, next) => {
     const userExists = await User.findOne({ email: data.email });
 
     if (userExists) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
+      return responseForDuplicateEmail(res);
     }
 
     const user = await User.create({
@@ -62,9 +66,7 @@ const registerUser = async (req, res, next) => {
     });
   } catch (error) {
     if (error && error.code === 11000) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
+      return responseForDuplicateEmail(res);
     }
 
     logger.error("Error registering user", { error });

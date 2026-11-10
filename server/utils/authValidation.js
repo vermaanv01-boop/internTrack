@@ -72,7 +72,7 @@ const parseEmail = (value, errors, required) => {
     return trimmed;
 };
 
-const parsePassword = (value, errors, required) => {
+const parsePassword = (value, errors, required, { enforceMinimum = true } = {}) => {
     if (value === undefined || value === null || value === "") {
         if (required) {
             errors.password = "Password is required";
@@ -86,7 +86,7 @@ const parsePassword = (value, errors, required) => {
         return undefined;
     }
 
-    if (value.length < MIN_PASSWORD_LENGTH) {
+    if (enforceMinimum && value.length < MIN_PASSWORD_LENGTH) {
         errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
         return undefined;
     }
@@ -126,7 +126,7 @@ const validateLogin = (body) => {
     const errors = {};
     const data = {
         email: parseEmail(body.email, errors, true),
-        password: parsePassword(body.password, errors, true),
+        password: parsePassword(body.password, errors, true, { enforceMinimum: false }),
     };
 
     return Object.keys(errors).length > 0 ? { errors } : { data };

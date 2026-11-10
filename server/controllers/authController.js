@@ -1,17 +1,48 @@
-const mongoose = require("mongoose");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
+const {
+  validateRegistration,
+  validateLogin,
+  validateUserUpdate,
+} = require("../utils/authValidation");
+
+const responseForValidationErrors = (res, errors) =>
+  res.status(400).json({
+    message: "Validation failed",
+    errors,
+  });
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+  if (!process.env.JWT_SECRET) {
+    const error = new Error("JWT_SECRET is not configured");
+    error.statusCode = 500;
+    throw error;
+  }
+
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+    algorithm: "HS256",
+  });
 };
 
-const registerUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+const toSafeUser = (user) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  createdAt: user.createdAt || user.timestamp,
+});
 
-    const userExists = await User.findOne({ email });
+const registerUser = async (req, res, next) => {
+  const { errors, data } = validateRegistration(req.body);
+
+  if (errors) {
+    return responseForValidationErrors(res, errors);
+  }
+
+  try {
+    const userExists = await User.findOne({ email: data.email });
 
     if (userExists) {
       return res.status(400).json({
@@ -20,35 +51,36 @@ const registerUser = async (req, res) => {
     }
 
     const user = await User.create({
-      name,
-      email,
-      password: await bcrypt.hash(password, 10),
+      name: data.name,
+      email: data.email,
+      password: await bcrypt.hash(data.password, 10),
     });
 
-    const safeUser = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      createdAt: user.createdAt || user.timestamp,
-    };
-
-    res.status(201).json({
+    return res.status(201).json({
       message: "User registered successfully",
-      user: safeUser,
+      user: toSafeUser(user),
     });
   } catch (error) {
-    console.error("Error registering user", error);
-    res.status(500).json({
-      message: "Server error",
-    });
+    if (error && error.code === 11000) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+
+    logger.error("Error registering user", { error });
+    return next(error);
   }
 };
 
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+const loginUser = async (req, res, next) => {
+  const { errors, data } = validateLogin(req.body);
 
-    const user = await User.findOne({ email });
+  if (errors) {
+    return responseForValidationErrors(res, errors);
+  }
+
+  try {
+    const user = await User.findOne({ email: data.email });
 
     if (!user) {
       return res.status(404).json({
@@ -56,79 +88,75 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(data.password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({
         message: "Invalid credentials",
       });
     }
-    const generateToken = (id) => {
-      return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
-    };
+
     const token = generateToken(user._id);
 
-    const safeUser = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      createdAt: user.createdAt || user.timestamp,
-    };
-
-    res.status(200).json({
+    return res.status(200).json({
       message: "User logged in successfully",
-      user: safeUser,
+      user: toSafeUser(user),
       token,
     });
   } catch (error) {
-    console.error("Error logging in user", error);
-    res.status(500).json({
-      message: "Server error",
-    });
+    logger.error("Error logging in user", { error });
+    return next(error);
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
+  const { errors, data } = validateUserUpdate(req.body);
+
+  if (errors) {
+    return responseForValidationErrors(res, errors);
+  }
+
   try {
     const { id } = req.params;
-    const { name, email, password } = req.body;
+    const update = {};
 
-    const update = { name, email };
+    if (data.name !== undefined) {
+      update.name = data.name;
+    }
 
-    if (password !== undefined) {
-      update.password = await bcrypt.hash(password, 10);
+    if (data.email !== undefined) {
+      update.email = data.email;
+    }
+
+    if (data.password !== undefined) {
+      update.password = await bcrypt.hash(data.password, 10);
     }
 
     const user = await User.findByIdAndUpdate(id, update, { new: true });
 
-    const safeUser = user
-      ? {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          createdAt: user.createdAt || user.timestamp,
-        }
-      : undefined;
-
-    res.status(200).json({
+    return res.status(200).json({
       message: "User updated successfully",
-      user: safeUser,
+      user: user ? toSafeUser(user) : undefined,
     });
   } catch (error) {
-    console.error("Error updating user", error);
-    res.status(500).json({
-      message: "Server error",
-    });
+    if (error && error.code === 11000) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+
+    logger.error("Error updating user", { error });
+    return next(error);
   }
 };
 
-const logoutUser = async (req, res) => {
+const logoutUser = async (req, res, next) => {
   try {
-
-    res.status(200).json({ message: "User logged out successfully" });
+    return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
-    console.error("Error logging out user", error);
-    res.status(500).json({ message: "Server error" });
+    logger.error("Error logging out user", { error });
+    return next(error);
   }
 };
+
 module.exports = { registerUser, loginUser, updateUser, logoutUser };

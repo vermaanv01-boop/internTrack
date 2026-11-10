@@ -250,6 +250,42 @@ test("login rejects malformed passwords but preserves credential error behavior"
     }
 });
 
+test("login verifies legacy passwords shorter than the registration minimum", async () => {
+    User.findOne = async () => ({
+        _id: new mongoose.Types.ObjectId(),
+        name: "Legacy User",
+        email: "legacy@example.com",
+        password: await bcrypt.hash("short", 4),
+        createdAt: new Date(),
+    });
+
+    try {
+        const app = buildAuthApp();
+        const res = await request(app)
+            .post("/api/users/login")
+            .send({ email: "legacy@example.com", password: "short" });
+
+        assert.equal(res.status, 200);
+        assert.ok(res.body.token);
+        assert.equal(res.body.user.email, "legacy@example.com");
+    } finally {
+        User.findOne = originalUserMethods.findOne;
+    }
+});
+
+test("registration still enforces the minimum password length", async () => {
+    const app = buildAuthApp();
+    const res = await request(app).post("/api/users/register").send({
+        name: "Short Password",
+        email: "short@example.com",
+        password: "short",
+    });
+
+    assert.equal(res.status, 400);
+    assert.equal(res.body.message, "Validation failed");
+    assert.equal(res.body.errors.password, "Password must be at least 8 characters");
+});
+
 test("JWT middleware accepts HS256 tokens and rejects invalid algorithms or signatures", async () => {
     const app = express();
     app.get("/protected", protect, (req, res) => res.json({ id: req.user.id }));

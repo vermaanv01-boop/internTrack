@@ -166,6 +166,7 @@ test("E2E User Flow 1: Authentication lifecycle", async () => {
         .post("/api/users/register")
         .send({ name: "Alice Duplicate", email: "alice@example.com", password: "password123" });
     assert.equal(dupRes.status, 400);
+    assert.equal(dupRes.body.errors.email, "An account with this email already exists");
 
     // 3. Reject bad credentials
     const badLogin = await request(app)

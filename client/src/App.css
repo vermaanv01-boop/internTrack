@@ -1318,6 +1318,43 @@
   margin-top: 4px;
 }
 
+/* Page wrappers */
+.applications-page,
+.dashboard-page,
+.resumes-page,
+.matching-page,
+.interview-prep-page {
+  min-width: 0;
+  animation: page-in 0.24s ease-out;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.live-session-container,
+.app-detail-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.answer-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.cat-score {
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
 /* Common UI helpers */
 .font-semibold {
   font-weight: 600;

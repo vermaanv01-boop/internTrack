@@ -273,7 +273,7 @@ const handleControllerError = (res, error, context) => {
         return res.status(400).json({ message: "Invalid ID" });
     }
 
-    console.error(context, error);
+    logger.error(context, { error });
     return res.status(500).json({ message: "Server error" });
 };
 

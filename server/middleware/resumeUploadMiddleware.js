@@ -1,4 +1,5 @@
 const multer = require("multer");
+const logger = require("../utils/logger");
 const { MAX_FILE_SIZE } = require("../utils/resumeContent");
 
 const upload = multer({
@@ -42,7 +43,7 @@ const uploadResumeFile = (req, res, next) => {
             return res.status(statusCode).json({ message });
         }
 
-        console.error("Error processing resume upload", error);
+        logger.error("Error processing resume upload", { error });
         return res.status(400).json({ message: "Invalid resume upload request" });
     });
 };

@@ -53,7 +53,7 @@ const handleResumeError = (res, error, context) => {
         return res.status(409).json({ message: "An active resume already exists for this user" });
     }
 
-    console.error(context, error);
+    logger.error(context, { error });
     return res.status(500).json({ message: "Server error" });
 };
 
@@ -93,7 +93,7 @@ const uploadResume = async (req, res) => {
             });
         } catch (error) {
             await deleteStoredFile(storedFilename).catch((cleanupError) => {
-                console.error("Error cleaning up uploaded resume file", cleanupError);
+                logger.error("Error cleaning up uploaded resume file", { error: cleanupError });
             });
             throw error;
         }
@@ -193,7 +193,7 @@ const downloadResume = async (req, res) => {
         const stream = fs.createReadStream(filePath);
 
         stream.on("error", (error) => {
-            console.error("Error streaming resume file", error);
+            logger.error("Error streaming resume file", { error });
 
             if (!res.headersSent) {
                 return res.status(500).json({ message: "Server error" });

@@ -209,7 +209,7 @@ const getDashboardAnalytics = async (req, res) => {
             recentApplications: Array.isArray(facet.recent) ? facet.recent : [],
         });
     } catch (error) {
-        console.error("Error fetching dashboard analytics", error);
+        logger.error("Error fetching dashboard analytics", { error });
         return res.status(500).json({ message: "Server error" });
     }
 };

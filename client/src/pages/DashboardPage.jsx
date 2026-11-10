@@ -98,7 +98,7 @@ export const DashboardPage = () => {
             <div key={idx} className="card metric-card">
               <div className="metric-header">
                 <span className="metric-label">{stat.label}</span>
-                <span className="metric-icon-wrap" style={{ color: stat.color, backgroundColor: `${stat.color}14` }}>
+                <span className="metric-icon-wrap" style={{ color: stat.color, backgroundColor: `color-mix(in srgb, ${stat.color} 12%, transparent)` }}>
                   <Icon size={18} />
                 </span>
               </div>
@@ -132,7 +132,7 @@ export const DashboardPage = () => {
                         width: `${percentage}%`,
                         backgroundColor: stage.key === 'offer' ? 'var(--color-success)' : 
                                          stage.key === 'rejected' ? 'var(--color-danger)' : 
-                                         stage.key === 'interview' ? '#4f46e5' : 'var(--color-primary)'
+                                         stage.key === 'interview' ? 'var(--color-info)' : 'var(--color-primary)'
                       }} 
                     />
                   </div>

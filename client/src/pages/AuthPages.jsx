@@ -210,9 +210,11 @@ export const RegisterPage = () => {
                 placeholder="Jane Doe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                aria-invalid={Boolean(fieldErrors.name)}
                 required
               />
             </div>
+            {fieldErrors.name && <div className="form-error">{fieldErrors.name}</div>}
           </div>
 
           <div className="form-group">
@@ -226,9 +228,11 @@ export const RegisterPage = () => {
                 placeholder="you@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                aria-invalid={Boolean(fieldErrors.email)}
                 required
               />
             </div>
+            {fieldErrors.email && <div className="form-error">{fieldErrors.email}</div>}
           </div>
 
           <div className="form-group">
@@ -239,12 +243,14 @@ export const RegisterPage = () => {
                 id="register-password"
                 type="password"
                 className="form-input"
-                placeholder="At least 6 characters"
+                placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                aria-invalid={Boolean(fieldErrors.password)}
                 required
               />
             </div>
+            {fieldErrors.password && <div className="form-error">{fieldErrors.password}</div>}
           </div>
 
           <button

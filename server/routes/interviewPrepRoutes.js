@@ -11,8 +11,9 @@ const {
     submitAnswer,
 } = require("../controllers/interviewPrepController");
 const { protect } = require("../middleware/authMiddleware");
+const { sensitiveActionLimiter } = require("../middleware/rateLimiters");
 
-router.post("/generate", protect, generateSession);
+router.post("/generate", protect, sensitiveActionLimiter, generateSession);
 router.post("/:id/start", protect, startSession);
 router.post("/:id/answer", protect, submitAnswer);
 router.post("/:id/complete", protect, completeSession);

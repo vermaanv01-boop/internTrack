@@ -4,11 +4,13 @@ const router = express.Router();
 
 const {registerUser , loginUser , updateUser , logoutUser} = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
+const { authLimiter } = require("../middleware/rateLimiters");
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post("/register", authLimiter, registerUser);
+router.post("/login", authLimiter, loginUser);
 router.put(
   "/update/:id",
+  authLimiter,
   protect,
   (req, res, next) => {
     if (req.user.id.toLowerCase() !== req.params.id.toLowerCase()) {

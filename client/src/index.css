@@ -98,7 +98,7 @@ button {
 }
 
 .sidebar {
-  width: 260px;
+  width: 268px;
   background-color: var(--color-primary);
   color: var(--text-inverted);
   display: flex;
@@ -108,71 +108,88 @@ button {
   top: 0;
   height: 100vh;
   z-index: 10;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(23, 27, 23, 0.12);
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.04);
 }
 
 .sidebar-brand {
-  padding: 24px 20px;
+  padding: 26px 22px;
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logo-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  background-color: var(--color-gold);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background-color: var(--color-gold-subtle);
   color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .sidebar-nav {
-  padding: 20px 12px;
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(247, 246, 239, 0.25) transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: rgba(247, 246, 239, 0.25);
+  border-radius: var(--radius-full);
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: var(--radius-sm);
-  color: rgba(252, 251, 249, 0.75);
-  font-size: 0.925rem;
+  color: rgba(247, 246, 239, 0.72);
+  font-size: 0.91rem;
   font-weight: 500;
-  transition: all var(--transition-fast);
+  letter-spacing: 0.01em;
+  transition: color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .nav-item:hover {
   color: var(--text-inverted);
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.07);
 }
 
 .nav-item.active {
   color: var(--text-inverted);
   background-color: rgba(255, 255, 255, 0.12);
   font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--color-gold);
 }
 
 .sidebar-footer {
-  padding: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
 }
 
 .user-profile-badge {

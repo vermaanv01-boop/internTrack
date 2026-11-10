@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+import { API_BASE_URL } from "../config/env";
 
 const TOKEN_KEY = "interntrack_token";
 const USER_KEY = "interntrack_user";
@@ -38,6 +38,12 @@ export class ApiError extends Error {
     }
 }
 
+const buildApiUrl = (endpoint) => {
+    const baseUrl = API_BASE_URL.replace(/\/+$/, "");
+    const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    return `${baseUrl}${path}`;
+};
+
 export const request = async (endpoint, options = {}) => {
     const {
         method = "GET",
@@ -48,7 +54,7 @@ export const request = async (endpoint, options = {}) => {
         responseType = "json",
     } = options;
 
-    let url = `${API_BASE_URL}${endpoint}`;
+    let url = buildApiUrl(endpoint);
 
     if (params) {
         const queryParams = new URLSearchParams();
@@ -70,12 +76,18 @@ export const request = async (endpoint, options = {}) => {
         requestHeaders.set("Authorization", `Bearer ${token}`);
     }
 
-    if (!isFormData && !requestHeaders.has("Content-Type") && method !== "GET") {
+    if (!requestHeaders.has("Accept")) {
+        requestHeaders.set("Accept", responseType === "blob" ? "*/*" : "application/json");
+    }
+
+    const isMultipartBody = isFormData || body instanceof FormData;
+
+    if (!isMultipartBody && !requestHeaders.has("Content-Type") && method !== "GET") {
         requestHeaders.set("Content-Type", "application/json");
     }
 
     let requestBody = body;
-    if (body && !isFormData && typeof body === "object" && !(body instanceof FormData)) {
+    if (body && !isMultipartBody && typeof body === "object") {
         requestBody = JSON.stringify(body);
     }
 

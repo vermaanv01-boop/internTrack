@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Application = require("../models/applicationModel");
+const logger = require("../utils/logger");
 
 const EMPLOYMENT_TYPES = Application.schema.path("employmentType").enumValues;
 const APPLICATION_STATUSES = Application.schema.path("status").enumValues;
@@ -445,7 +446,7 @@ const handleControllerError = (res, error, context) => {
         return res.status(400).json({ message: "Invalid application ID" });
     }
 
-    console.error(context, error);
+    logger.error(context, { error });
     return res.status(500).json({ message: "Server error" });
 };
 

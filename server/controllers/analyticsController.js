@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Application = require("../models/applicationModel");
+const logger = require("../utils/logger");
 
 const APPLICATION_STATUSES = Application.schema.path("status").enumValues;
 const PENDING_STATUSES = ["applied", "screening", "interview"];

@@ -55,8 +55,8 @@ export const DashboardPage = () => {
   const statCards = [
     { label: "Total Applications", value: overview.totalApplications || 0, icon: Briefcase, color: "var(--color-primary)" },
     { label: "This Month", value: overview.applicationsThisMonth || 0, icon: Calendar, color: "var(--color-gold)" },
-    { label: "Pending Review", value: overview.pendingApplications || 0, icon: Clock, color: "#e67e22" },
-    { label: "Interviews", value: overview.interviews || 0, icon: Award, color: "#4f46e5" },
+    { label: "Pending Review", value: overview.pendingApplications || 0, icon: Clock, color: "var(--color-warning)" },
+    { label: "Interviews", value: overview.interviews || 0, icon: Award, color: "var(--color-info)" },
     { label: "Offers Received", value: overview.offers || 0, icon: CheckCircle, color: "var(--color-success)" },
     { label: "Rejections", value: overview.rejections || 0, icon: XCircle, color: "var(--color-danger)" },
   ];

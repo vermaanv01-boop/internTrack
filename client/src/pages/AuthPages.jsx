@@ -3,9 +3,35 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 
+const MIN_PASSWORD_LENGTH = 8;
+
+const extractFieldErrors = (error) => {
+  if (!error?.errors || typeof error.errors !== "object" || Array.isArray(error.errors)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(error.errors).filter(([, message]) => typeof message === "string" && message)
+  );
+};
+
+const getErrorState = (error, fallbackMessage) => {
+  const { body, ...fieldErrors } = extractFieldErrors(error);
+
+  return {
+    fieldErrors,
+    message:
+      (typeof body === "string" && body) ||
+      (Object.keys(fieldErrors).length > 0
+        ? "Please correct the highlighted fields."
+        : error?.message || fallbackMessage),
+  };
+};
+
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -17,9 +43,15 @@ export const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
 
     if (!email.trim() || !password) {
-      setError("Please enter both email and password");
+      const nextFieldErrors = {};
+      if (!email.trim()) nextFieldErrors.email = "Email is required";
+      if (!password) nextFieldErrors.password = "Password is required";
+
+      setFieldErrors(nextFieldErrors);
+      setError("Please correct the highlighted fields.");
       return;
     }
 
@@ -28,7 +60,13 @@ export const LoginPage = () => {
       await login({ email: email.trim(), password });
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || "Failed to sign in. Please verify your credentials.");
+      const errorState = getErrorState(
+        err,
+        "Failed to sign in. Please verify your credentials."
+      );
+
+      setFieldErrors(errorState.fieldErrors);
+      setError(errorState.message);
     } finally {
       setLoading(false);
     }

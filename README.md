@@ -36,7 +36,21 @@ Then set the values in `server/.env`:
 | `JWT_SECRET` | Yes | Secret used to sign authentication tokens |
 | `RESUME_UPLOAD_DIR` | No | Private resume storage directory; defaults to `server/storage/resumes` |
 
-Do not commit `server/.env` or any other real environment file.
+Create the client environment file from the example:
+
+```powershell
+Copy-Item client/.env.example client/.env
+```
+
+Then set the client API URL in `client/.env`:
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | Yes | Backend API base URL, for example `https://api.example.com/api` or `/api` |
+| `VITE_BASE_PATH` | No | Frontend deployment base path; defaults to `/` |
+| `VITE_DEV_PROXY_TARGET` | No | Dev/preview proxy target used when `VITE_API_BASE_URL=/api` |
+
+Only `VITE_`-prefixed variables are exposed to browser code. Do not place secrets, tokens, or credentials in client environment files. Do not commit `server/.env`, `client/.env`, or any other real environment file.
 
 ## Server
 

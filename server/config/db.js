@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const logger = require('../utils/logger');
 
 let connectionPromise = null;
 
@@ -16,19 +17,21 @@ const connectDB = async ()=>{
 
     if (!connectionPromise) {
         if (!process.env.MONGO_URL) {
-            console.error("MongoDB connection failed: MONGO_URL is not configured");
+            logger.error("MongoDB connection failed: MONGO_URL is not configured");
             throw new Error("MONGO_URL is not configured");
         }
 
         connectionPromise = Promise.resolve()
             .then(() => mongoose.connect(process.env.MONGO_URL))
             .then((connection) => {
-                console.log("MongoDB connected successfully");
+                logger.info("MongoDB connected successfully");
                 return connection;
             })
             .catch((error) => {
                 connectionPromise = null;
-                console.error(`MongoDB connection failed: ${sanitizeError(error)}`);
+                logger.error("MongoDB connection failed", {
+                    error: { name: error && error.name, message: sanitizeError(error) },
+                });
                 throw error;
             });
     }

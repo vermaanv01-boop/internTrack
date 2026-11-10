@@ -44,6 +44,21 @@ const buildApiUrl = (endpoint) => {
     return `${baseUrl}${path}`;
 };
 
+const readErrorPayload = async (response) => {
+    try {
+        const contentType = response.headers.get("content-type") || "";
+
+        if (contentType.includes("application/json")) {
+            return await response.json();
+        }
+
+        const text = await response.text();
+        return text ? { message: text } : null;
+    } catch {
+        return null;
+    }
+};
+
 export const request = async (endpoint, options = {}) => {
     const {
         method = "GET",
@@ -113,18 +128,7 @@ export const request = async (endpoint, options = {}) => {
 
     if (responseType === "blob") {
         if (!response.ok) {
-            let errorData = null;
-            try {
-                const contentType = response.headers.get("content-type") || "";
-                if (contentType.includes("application/json")) {
-                    errorData = await response.json();
-                } else {
-                    const text = await response.text();
-                    errorData = text ? { message: text } : null;
-                }
-            } catch {
-                errorData = null;
-            }
+            const errorData = await readErrorPayload(response);
             throw new ApiError(
                 errorData?.message || `Request failed with status ${response.status}`,
                 response.status,

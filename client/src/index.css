@@ -225,22 +225,22 @@ button {
 }
 
 .user-email {
-  font-size: 0.75rem;
-  color: rgba(252, 251, 249, 0.6);
+  font-size: 0.74rem;
+  color: rgba(247, 246, 239, 0.58);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .btn-icon-logout {
-  color: rgba(252, 251, 249, 0.7);
-  padding: 6px;
+  color: rgba(247, 246, 239, 0.68);
+  padding: 7px;
   border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .btn-icon-logout:hover {
-  color: #ff8c8c;
+  color: #f0b4a5;
   background-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -253,33 +253,37 @@ button {
 }
 
 .content-body {
-  padding: 32px 40px;
-  max-width: 1280px;
+  padding: 40px 48px 56px;
+  max-width: 1320px;
   width: 100%;
   margin: 0 auto;
 }
 
 /* Page Header */
 .page-header {
-  margin-bottom: 28px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 18px;
 }
 
 .page-title {
-  font-size: 1.75rem;
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
   font-weight: 700;
-  color: var(--color-primary);
-  letter-spacing: -0.02em;
+  color: var(--text-main);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
 }
 
 .page-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.94rem;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 7px;
+  max-width: 72ch;
 }
 
 /* Cards */
@@ -287,26 +291,28 @@ button {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 24px;
+  padding: 26px;
   box-shadow: var(--shadow-sm);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .card:hover {
-  border-color: #d8d3c5;
+  border-color: var(--border-strong);
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--color-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.015em;
 }
 
 /* Buttons */

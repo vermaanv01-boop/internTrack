@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const MatchingAnalysis = require("../models/matchingAnalysisModel");
 const Resume = require("../models/resumeModel");
 const { analyzeResumeJob } = require("../services/matching");
+const logger = require("../utils/logger");
 
 const MIN_JOB_DESCRIPTION_LENGTH = 100;
 const MAX_JOB_DESCRIPTION_LENGTH = 30000;

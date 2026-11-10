@@ -9,6 +9,7 @@ const {
     ResumeStorageError,
 } = require("../config/resumeStorage");
 const { validateAndExtractResume, ResumeValidationError } = require("../utils/resumeContent");
+const logger = require("../utils/logger");
 
 const serializeResume = (resume) => {
     const extractedText = typeof resume.extractedText === "string" ? resume.extractedText : "";

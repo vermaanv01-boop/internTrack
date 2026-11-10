@@ -3,6 +3,7 @@ const InterviewPrepSession = require("../models/interviewPrepSessionModel");
 const Resume = require("../models/resumeModel");
 const { evaluateInterviewAnswer, generateInterviewQuestions } = require("../services/interviewPrep");
 const { DIFFICULTIES } = require("../services/interviewPrep/constants");
+const logger = require("../utils/logger");
 
 const MIN_JOB_DESCRIPTION_LENGTH = 100;
 const MAX_JOB_DESCRIPTION_LENGTH = 30000;

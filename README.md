@@ -73,14 +73,18 @@ The default API URL is `http://localhost:5000`. The root endpoint returns a heal
 
 ```powershell
 cd client
+Copy-Item .env.example .env
 npm install
 npm run dev
 ```
+
+The API client reads `VITE_API_BASE_URL` from the build-time environment. Set it to an absolute API URL such as `https://api.example.com/api`, or use `/api` when the frontend and API share an origin. When `/api` is used, Vite dev and preview proxy requests to `VITE_DEV_PROXY_TARGET` (default `http://localhost:5000`).
 
 Build and preview the production client:
 
 ```powershell
 cd client
+$env:VITE_API_BASE_URL = "https://api.example.com/api"
 npm run build
 npm run preview
 ```
@@ -91,6 +95,26 @@ Lint the client:
 cd client
 npm run lint
 ```
+
+## Frontend Deployment
+
+The frontend is a single-page application using `BrowserRouter`. Production hosting must rewrite unknown non-file paths to `/index.html` so direct navigation and page refreshes work for routes such as `/dashboard` and `/applications`.
+
+Example Nginx configuration:
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+Example Netlify `_redirects` entry:
+
+```text
+/* /index.html 200
+```
+
+When hosting under a subdirectory, set `VITE_BASE_PATH` for the build and configure the server rewrite under the same base path. Vite environment variables are embedded into the generated assets at build time; only public configuration belongs in them.
 
 ## API Routes
 
@@ -112,6 +136,6 @@ All resume routes require `Authorization: Bearer <token>`. Uploaded files are st
 
 ## Current Notes
 
-- The frontend is currently the Vite starter UI and does not yet call the API.
 - Run server tests with `npm test` from `server/`.
+- Run frontend lint and production build with `npm run lint` and `npm run build` from `client/`.
 - Install dependencies separately in `server/` and `client/`.

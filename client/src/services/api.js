@@ -130,6 +130,10 @@ export const request = async (endpoint, options = {}) => {
         return { blob, contentDisposition };
     }
 
+    if (response.status === 204) {
+        return null;
+    }
+
     let data;
     const contentType = response.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
@@ -141,6 +145,10 @@ export const request = async (endpoint, options = {}) => {
     } else {
         const text = await response.text();
         data = { message: text };
+    }
+
+    if (response.ok && data === null) {
+        throw new ApiError("Invalid response from server", response.status, null);
     }
 
     if (!response.ok) {

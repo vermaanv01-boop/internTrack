@@ -1,8 +1,11 @@
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
+
+const JWT_ALGORITHM = "HS256";
 
 const protect = (req, res, next) => {
   if (!process.env.JWT_SECRET) {
-    console.error("JWT_SECRET is not configured on the server");
+    logger.error("JWT_SECRET is not configured on the server");
     return res.status(500).json({ message: "Server configuration error" });
   }
 
@@ -21,7 +24,9 @@ const protect = (req, res, next) => {
   const token = parts[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: [JWT_ALGORITHM],
+    });
 
     if (
       !decoded ||

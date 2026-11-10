@@ -15,6 +15,7 @@ const SENSITIVE_VALUE_PATTERNS = [
     /Bearer\s+[A-Za-z0-9\-._~+/]+=*/gi,
     /\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g,
     /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g,
+    /(?:password|passwd|pwd|token|secret|api[-_]?key)\s*[:=]\s*[^\s,;]+/gi,
 ];
 
 const configuredLevel = String(process.env.LOG_LEVEL || "").toLowerCase();

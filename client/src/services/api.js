@@ -113,16 +113,22 @@ export const request = async (endpoint, options = {}) => {
 
     if (responseType === "blob") {
         if (!response.ok) {
-            let errorJson = null;
+            let errorData = null;
             try {
-                errorJson = await response.json();
+                const contentType = response.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    errorData = await response.json();
+                } else {
+                    const text = await response.text();
+                    errorData = text ? { message: text } : null;
+                }
             } catch {
-                // Ignore if not json
+                errorData = null;
             }
             throw new ApiError(
-                errorJson?.message || `Request failed with status ${response.status}`,
+                errorData?.message || `Request failed with status ${response.status}`,
                 response.status,
-                errorJson
+                errorData
             );
         }
         const blob = await response.blob();

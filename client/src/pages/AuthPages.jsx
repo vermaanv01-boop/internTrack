@@ -95,9 +95,11 @@ export const LoginPage = () => {
                 placeholder="you@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                aria-invalid={Boolean(fieldErrors.email)}
                 required
               />
             </div>
+            {fieldErrors.email && <div className="form-error">{fieldErrors.email}</div>}
           </div>
 
           <div className="form-group">
@@ -111,9 +113,11 @@ export const LoginPage = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                aria-invalid={Boolean(fieldErrors.password)}
                 required
               />
             </div>
+            {fieldErrors.password && <div className="form-error">{fieldErrors.password}</div>}
           </div>
 
           <button
@@ -137,6 +141,7 @@ export const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { register, login } = useAuth();
@@ -145,14 +150,24 @@ export const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
 
     if (!name.trim() || !email.trim() || !password) {
-      setError("All fields are required");
+      const nextFieldErrors = {};
+      if (!name.trim()) nextFieldErrors.name = "Name is required";
+      if (!email.trim()) nextFieldErrors.email = "Email is required";
+      if (!password) nextFieldErrors.password = "Password is required";
+
+      setFieldErrors(nextFieldErrors);
+      setError("Please correct the highlighted fields.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setFieldErrors({
+        password: `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
+      });
+      setError("Please correct the highlighted fields.");
       return;
     }
 
@@ -163,7 +178,10 @@ export const RegisterPage = () => {
       await login({ email: email.trim(), password });
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message || "Failed to create account.");
+      const errorState = getErrorState(err, "Failed to create account.");
+
+      setFieldErrors(errorState.fieldErrors);
+      setError(errorState.message);
     } finally {
       setLoading(false);
     }

@@ -41,10 +41,14 @@ export const AppLayout = () => {
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="sidebar-logo-icon">IT</div>
-          <div>InternTrack AI</div>
+          <div className="sidebar-brand-text">
+            <span className="sidebar-brand-name">InternTrack AI</span>
+            <span className="sidebar-brand-sub">Career command</span>
+          </div>
         </div>
 
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav" aria-label="Primary">
+          <div className="sidebar-section-label">Workspace</div>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (

@@ -29,7 +29,7 @@ const redact = (value) =>
         Boolean(sample && Object.prototype.hasOwnProperty.call(sample, "phone"))
     );
 
-    const session = mongoose.startSession();
+    const session = await mongoose.startSession();
     try {
       session.startTransaction();
       try {

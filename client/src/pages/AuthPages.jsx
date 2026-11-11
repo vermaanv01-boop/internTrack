@@ -256,84 +256,99 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="auth-logo">IT</div>
-          <h2 className="auth-title">Create an Account</h2>
-          <p className="auth-subtitle">Get started with AI-powered internship and job tracking</p>
-        </div>
-
-        {error && <div className="alert alert-danger">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-name">Full Name</label>
-            <div className="input-with-icon">
-              <User size={16} className="input-icon" />
-              <input
-                id="register-name"
-                type="text"
-                className="form-input"
-                placeholder="Jane Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.name)}
-                required
-              />
-            </div>
-            {fieldErrors.name && <div className="form-error">{fieldErrors.name}</div>}
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-email">Email Address</label>
-            <div className="input-with-icon">
-              <Mail size={16} className="input-icon" />
-              <input
-                id="register-email"
-                type="email"
-                className="form-input"
-                placeholder="you@domain.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.email)}
-                required
-              />
-            </div>
-            {fieldErrors.email && <div className="form-error">{fieldErrors.email}</div>}
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-password">Password</label>
-            <div className="input-with-icon">
-              <Lock size={16} className="input-icon" />
-              <input
-                id="register-password"
-                type="password"
-                className="form-input"
-                placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.password)}
-                required
-              />
-            </div>
-            {fieldErrors.password && <div className="form-error">{fieldErrors.password}</div>}
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary auth-submit-btn"
-            disabled={loading}
-          >
-            {loading ? <span className="spinner" /> : <>Create Account <ArrowRight size={16} /></>}
-          </button>
-        </form>
-
-        <div className="auth-footer">
+    <AuthShell
+      eyebrow="Create your account"
+      title="Start your career command center"
+      subtitle="Bring your applications, resumes, and interview practice into one focused workspace."
+      footer={
+        <>
           Already have an account? <Link to="/login" className="auth-link">Sign In</Link>
+        </>
+      }
+    >
+      {error && <div className="alert alert-danger" role="alert">{error}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label className="form-label" htmlFor="register-name">Full Name</label>
+          <div className="input-with-icon">
+            <User size={16} className="input-icon" aria-hidden="true" />
+            <input
+              id="register-name"
+              type="text"
+              className="form-input"
+              placeholder="Jane Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              aria-invalid={Boolean(fieldErrors.name)}
+              aria-describedby={fieldErrors.name ? "register-name-error" : undefined}
+              autoComplete="name"
+              required
+            />
+          </div>
+          {fieldErrors.name && (
+            <div className="form-error" id="register-name-error">{fieldErrors.name}</div>
+          )}
         </div>
+
+        <div className="form-group">
+          <label className="form-label" htmlFor="register-email">Email Address</label>
+          <div className="input-with-icon">
+            <Mail size={16} className="input-icon" aria-hidden="true" />
+            <input
+              id="register-email"
+              type="email"
+              className="form-input"
+              placeholder="you@domain.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
+              autoComplete="email"
+              required
+            />
+          </div>
+          {fieldErrors.email && (
+            <div className="form-error" id="register-email-error">{fieldErrors.email}</div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label className="form-label" htmlFor="register-password">Password</label>
+          <div className="input-with-icon">
+            <Lock size={16} className="input-icon" aria-hidden="true" />
+            <input
+              id="register-password"
+              type="password"
+              className="form-input"
+              placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              aria-invalid={Boolean(fieldErrors.password)}
+              aria-describedby={fieldErrors.password ? "register-password-error" : undefined}
+              autoComplete="new-password"
+              required
+            />
+          </div>
+          {fieldErrors.password && (
+            <div className="form-error" id="register-password-error">{fieldErrors.password}</div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="btn btn-primary auth-submit-btn"
+          disabled={loading}
+          aria-busy={loading}
+        >
+          {loading ? <span className="spinner" aria-label="Creating account" /> : <>Create Account <ArrowRight size={16} aria-hidden="true" /></>}
+        </button>
+      </form>
+
+      <div className="auth-trust">
+        <Lock size={13} aria-hidden="true" />
+        <span>Your account is protected with secure authentication.</span>
       </div>
-    </div>
+    </AuthShell>
   );
 };

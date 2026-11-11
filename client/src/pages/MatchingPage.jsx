@@ -151,38 +151,48 @@ export const MatchingPage = () => {
               {result.summary || "Deterministic concept-weighted score calculated against candidate profile."}
             </p>
           </div>
-          <div className="match-score-big">
-            <div className="match-score-number">{result.matchScore ?? 0}%</div>
-            <div className="match-score-tag">{result.matchLabel || result.scoreLabel || "Score"}</div>
+          <div className="match-score-ring-wrap">
+            <div
+              className="match-score-ring"
+              style={{
+                backgroundImage: `conic-gradient(var(--color-primary) ${Math.max(0, Math.min(100, result.matchScore ?? 0))}%, var(--bg-surface-hover) 0)`,
+              }}
+              role="img"
+              aria-label={`Match score ${result.matchScore ?? 0} percent`}
+            >
+              <div className="match-score-ring-inner">
+                <div className="match-score-number">{result.matchScore ?? 0}%</div>
+                <div className="match-score-tag">{result.matchLabel || result.scoreLabel || "Score"}</div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Score Breakdown Pill Grid */}
         <div className="score-breakdown-grid">
-          <div className="breakdown-stat-box">
-            <span className="breakdown-stat-label">Skills Weight</span>
-            <span className="breakdown-stat-val">
-              {scoreBreakdown.skillsScore ?? "—"}{typeof scoreBreakdown.skillsScore === "number" ? "%" : ""}
-            </span>
-          </div>
-          <div className="breakdown-stat-box">
-            <span className="breakdown-stat-label">Experience Weight</span>
-            <span className="breakdown-stat-val">
-              {scoreBreakdown.experienceScore ?? "—"}{typeof scoreBreakdown.experienceScore === "number" ? "%" : ""}
-            </span>
-          </div>
-          <div className="breakdown-stat-box">
-            <span className="breakdown-stat-label">Education Weight</span>
-            <span className="breakdown-stat-val">
-              {scoreBreakdown.educationScore ?? "—"}{typeof scoreBreakdown.educationScore === "number" ? "%" : ""}
-            </span>
-          </div>
-          <div className="breakdown-stat-box">
-            <span className="breakdown-stat-label">Keyword Density</span>
-            <span className="breakdown-stat-val">
-              {result.keywordAnalysis?.coverage ? `${Math.round(result.keywordAnalysis.coverage * 100)}%` : "—"}
-            </span>
-          </div>
+          {breakdownItems.map((item) => (
+            <div key={item.label} className="breakdown-stat-box">
+              <span className="breakdown-stat-label">{item.label}</span>
+              <span className="breakdown-stat-val">
+                {typeof item.value === "number" ? `${item.value}%` : "—"}
+              </span>
+              <div
+                className="breakdown-stat-bar"
+                role="progressbar"
+                aria-label={`${item.label} score`}
+                aria-valuenow={typeof item.value === "number" ? item.value : 0}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
+                <div
+                  className="breakdown-stat-fill"
+                  style={{
+                    width: `${typeof item.value === "number" ? Math.max(0, Math.min(100, item.value)) : 0}%`,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Skills Alignment Grid */}
@@ -280,6 +290,7 @@ export const MatchingPage = () => {
     <div className="matching-page">
       <div className="page-header">
         <div>
+          <span className="page-eyebrow">Fit intelligence</span>
           <h1 className="page-title">Resume–Job Fit Engine</h1>
           <p className="page-subtitle">Deterministic skill, keyword & experience alignment analysis</p>
         </div>

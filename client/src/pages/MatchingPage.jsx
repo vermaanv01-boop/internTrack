@@ -9,7 +9,7 @@ import {
   TrendingUp
 } from "lucide-react";
 import { resumeService, matchingService } from "../services";
-import { EmptyState, LoadingState, Modal, Pagination } from "../components/common";
+import { EmptyState, LoadingState, Modal, Pagination, ScoreBadge } from "../components/common";
 
 export const MatchingPage = () => {
   const [resumes, setResumes] = useState([]);

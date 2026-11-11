@@ -158,17 +158,34 @@ export const ResumesPage = () => {
         />
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
-      {uploadError && <div className="alert alert-danger">{uploadError}</div>}
+      {error && <div className="alert alert-danger" role="alert">{error}</div>}
+      {uploadError && <div className="alert alert-danger" role="alert">{uploadError}</div>}
 
       {/* Upload Zone Card */}
       <div 
-        className="card resume-upload-zone" 
+        className={`card resume-upload-zone ${isDragging ? "is-dragging" : ""}`} 
         onClick={() => !uploading && fileInputRef.current?.click()}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          if (!uploading) setIsDragging(true);
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!uploading) setIsDragging(true);
+        }}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onKeyDown={handleUploadZoneKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-disabled={uploading}
+        aria-label="Upload resume. Drag and drop a PDF or DOCX file, or press Enter to browse."
       >
         <div className="upload-zone-content">
-          <UploadCloud size={40} className="upload-zone-icon" />
-          <h3 className="upload-zone-title">Upload candidate resume (PDF or DOCX)</h3>
+          <UploadCloud size={40} className="upload-zone-icon" aria-hidden="true" />
+          <h3 className="upload-zone-title">
+            {isDragging ? "Drop your resume to upload" : "Upload candidate resume (PDF or DOCX)"}
+          </h3>
           <p className="upload-zone-desc">
             Maximum file size: 5MB. Text extraction and security scanning are performed automatically.
           </p>

@@ -160,7 +160,11 @@ export const DashboardPage = () => {
         {/* 6-Month Application Trend */}
         <div className="card">
           <div className="card-header">
-            <h3 className="card-title">Application Momentum (6 Months)</h3>
+            <div>
+              <span className="card-kicker">Submission velocity</span>
+              <h3 className="card-title">Application Momentum (6 Months)</h3>
+            </div>
+            <span className="card-header-meta"><strong>{totalTrend}</strong> submitted</span>
           </div>
           {trend.length === 0 ? (
             <p className="text-muted" style={{ fontSize: "0.9rem" }}>No submission activity found in the last 6 months.</p>

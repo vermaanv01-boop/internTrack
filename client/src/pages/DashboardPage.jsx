@@ -116,7 +116,11 @@ export const DashboardPage = () => {
         {/* Pipeline Distribution Card */}
         <div className="card">
           <div className="card-header">
-            <h3 className="card-title">Recruitment Pipeline</h3>
+            <div>
+              <span className="card-kicker">Stage distribution</span>
+              <h3 className="card-title">Recruitment Pipeline</h3>
+            </div>
+            <span className="card-header-meta"><strong>{totalPipeline}</strong> total</span>
           </div>
           <div className="pipeline-list">
             {pipelineStages.map((stage) => {
@@ -129,7 +133,14 @@ export const DashboardPage = () => {
                     </span>
                     <span className="pipeline-count">{stage.count}</span>
                   </div>
-                  <div className="pipeline-bar-track">
+                  <div
+                    className="pipeline-bar-track"
+                    role="progressbar"
+                    aria-label={`${stage.label} stage share`}
+                    aria-valuenow={percentage}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  >
                     <div 
                       className="pipeline-bar-fill" 
                       style={{ 

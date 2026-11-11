@@ -220,6 +220,7 @@ export const ApplicationsPage = () => {
               className="form-select filter-select"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
+              aria-label="Filter applications by status"
             >
               <option value="">All Statuses</option>
               <option value="applied">Applied</option>
@@ -234,6 +235,7 @@ export const ApplicationsPage = () => {
               className="form-select filter-select"
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
+              aria-label="Sort applications"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>

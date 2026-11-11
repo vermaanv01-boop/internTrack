@@ -202,11 +202,22 @@ export const InterviewPrepPage = () => {
   const currentQ = currentQuestions[activeQuestionIndex];
   const isQuestionAnswered = (qId) => currentAnswers.some((a) => a.questionId === qId);
   const getExistingAnswer = (qId) => currentAnswers.find((a) => a.questionId === qId);
+  const answeredCount = currentAnswers.length;
+  const progressPct = currentQuestions.length
+    ? Math.round((answeredCount / currentQuestions.length) * 100)
+    : 0;
+  const getScoreTone = (score) => {
+    if (typeof score !== "number") return "cat-score-low";
+    if (score >= 75) return "cat-score-high";
+    if (score >= 50) return "cat-score-mid";
+    return "cat-score-low";
+  };
 
   return (
     <div className="interview-prep-page">
       <div className="page-header">
         <div>
+          <span className="page-eyebrow">Interview rehearsal</span>
           <h1 className="page-title">Interactive Mock Interview Suite</h1>
           <p className="page-subtitle">Tailored technical, behavioral & experience questions with deterministic answer evaluation</p>
         </div>

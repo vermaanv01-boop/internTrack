@@ -1998,6 +1998,13 @@
   color: var(--text-muted);
 }
 
+.resume-file-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .resume-status-dot {
   display: inline-block;
   width: 7px;

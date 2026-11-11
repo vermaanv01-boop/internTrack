@@ -868,11 +868,13 @@ body {
 }
 
 /* Small screens */
-@media (max-width: 640px) {
+@media (max-width: 900px) {
   .sidebar-section-label {
     display: none;
   }
+}
 
+@media (max-width: 640px) {
   .page-actions {
     width: 100%;
   }

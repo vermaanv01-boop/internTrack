@@ -128,10 +128,16 @@ export const ResumesPage = () => {
     return `${(kb / 1024).toFixed(1)} MB`;
   };
 
+  const getFileType = (name) => {
+    const ext = (name || "").split(".").pop();
+    return ext && ext !== name ? ext.toUpperCase() : "FILE";
+  };
+
   return (
     <div className="resumes-page">
       <div className="page-header">
         <div>
+          <span className="page-eyebrow">Document library</span>
           <h1 className="page-title">Resume Asset Repository</h1>
           <p className="page-subtitle">Upload multiple iterations and designate an active canonical resume for AI evaluations</p>
         </div>

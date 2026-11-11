@@ -194,9 +194,12 @@ export const DashboardPage = () => {
       {/* Recent Applications Section */}
       <div className="card" style={{ marginTop: 24 }}>
         <div className="card-header">
-          <h3 className="card-title">Recent Application Activity</h3>
+          <div>
+            <span className="card-kicker">Latest activity</span>
+            <h3 className="card-title">Recent Application Activity</h3>
+          </div>
           <Link to="/applications" className="card-action-link">
-            Manage All <ArrowRight size={14} />
+            Manage All <ArrowRight size={14} aria-hidden="true" />
           </Link>
         </div>
 

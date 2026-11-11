@@ -432,12 +432,7 @@ export const MatchingPage = () => {
                           </div>
                         </td>
                         <td>
-                          <span className="font-semibold" style={{ fontSize: "1rem" }}>
-                            {item.matchScore}%
-                          </span>{" "}
-                          <span className="text-muted" style={{ fontSize: "0.8rem" }}>
-                            ({item.scoreLabel})
-                          </span>
+                          <ScoreBadge score={item.matchScore ?? 0} label={item.scoreLabel} />
                         </td>
                         <td>
                           <span className="text-success font-semibold">{item.matchedSkillsCount} skills</span>

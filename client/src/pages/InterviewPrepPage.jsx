@@ -254,7 +254,7 @@ export const InterviewPrepPage = () => {
             <h3 className="card-title">Generate Contextual Interview Questions</h3>
           </div>
           <form onSubmit={handleGenerate}>
-            {formError && <div className="alert alert-danger">{formError}</div>}
+            {formError && <div className="alert alert-danger" role="alert">{formError}</div>}
 
             <div className="form-grid-3">
               <div className="form-group">
@@ -528,7 +528,7 @@ export const InterviewPrepPage = () => {
                   ) : currentSession.status === "in_progress" ? (
                     /* Answer Input Form */
                     <form onSubmit={handleSubmitAnswer} className="answer-form" style={{ marginTop: 20 }}>
-                      {answerError && <div className="alert alert-danger">{answerError}</div>}
+                      {answerError && <div className="alert alert-danger" role="alert">{answerError}</div>}
                       <label className="form-label" htmlFor="answer-input">
                         Your Professional Answer (Minimum 20 characters)
                       </label>

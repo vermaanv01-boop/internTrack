@@ -72,15 +72,18 @@ export const DashboardPage = () => {
 
   const maxPipelineCount = Math.max(...pipelineStages.map((s) => s.count), 1);
   const maxTrendCount = Math.max(...trend.map((t) => t.count), 1);
+  const totalPipeline = pipelineStages.reduce((sum, stage) => sum + stage.count, 0);
+  const totalTrend = trend.reduce((sum, point) => sum + point.count, 0);
 
   return (
     <div className="dashboard-page">
       <div className="page-header">
         <div>
+          <span className="page-eyebrow">Performance snapshot</span>
           <h1 className="page-title">Executive Overview</h1>
           <p className="page-subtitle">Track your recruitment momentum and AI preparation metrics</p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="page-actions">
           <Link to="/applications" className="btn btn-secondary btn-sm">
             <Briefcase size={14} /> View All
           </Link>
@@ -95,14 +98,15 @@ export const DashboardPage = () => {
         {statCards.map((stat, idx) => {
           const Icon = stat.icon;
           return (
-            <div key={idx} className="card metric-card">
+            <div key={idx} className={`card metric-card ${idx === 0 ? "metric-card-featured" : ""}`}>
               <div className="metric-header">
                 <span className="metric-label">{stat.label}</span>
                 <span className="metric-icon-wrap" style={{ color: stat.color, backgroundColor: `color-mix(in srgb, ${stat.color} 12%, transparent)` }}>
-                  <Icon size={18} />
+                  <Icon size={18} aria-hidden="true" />
                 </span>
               </div>
               <div className="metric-value">{stat.value}</div>
+              <div className="metric-meta">{stat.meta}</div>
             </div>
           );
         })}

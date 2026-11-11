@@ -215,6 +215,59 @@ test("registration responses never expose password hashes or raw passwords", asy
     }
 });
 
+test("reports duplicate email keys as an email conflict", async () => {
+    User.findOne = async () => null;
+    User.create = async () => {
+        const error = new Error("E11000 duplicate key error collection: users index: email_1");
+        error.code = 11000;
+        error.keyPattern = { email: 1 };
+        error.keyValue = { email: "alice@example.com" };
+        throw error;
+    };
+
+    try {
+        const app = buildAuthApp();
+        const res = await request(app).post("/api/users/register").send({
+            name: "Alice Developer",
+            email: "alice@example.com",
+            password: "password123",
+        });
+
+        assert.equal(res.status, 400);
+        assert.equal(res.body.errors.email, "An account with this email already exists");
+    } finally {
+        User.findOne = originalUserMethods.findOne;
+        User.create = originalUserMethods.create;
+    }
+});
+
+test("does not report non-email duplicate keys as duplicate email", async () => {
+    User.findOne = async () => null;
+    User.create = async () => {
+        const error = new Error("E11000 duplicate key error collection: users index: phone_1");
+        error.code = 11000;
+        error.keyPattern = { phone: 1 };
+        error.keyValue = { phone: null };
+        throw error;
+    };
+
+    try {
+        const app = buildAuthApp();
+        const res = await request(app).post("/api/users/register").send({
+            name: "Alice Developer",
+            email: "alice@example.com",
+            password: "password123",
+        });
+
+        assert.equal(res.status, 409);
+        assert.deepEqual(res.body, { message: "Resource already exists" });
+        assert.equal(res.body.errors, undefined);
+    } finally {
+        User.findOne = originalUserMethods.findOne;
+        User.create = originalUserMethods.create;
+    }
+});
+
 test("login validation rejects incomplete credentials without exposing secrets", async () => {
     const app = buildAuthApp();
     const res = await request(app)

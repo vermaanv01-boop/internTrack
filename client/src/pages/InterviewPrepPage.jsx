@@ -460,6 +460,18 @@ export const InterviewPrepPage = () => {
             {/* Sidebar Navigator */}
             <div className="card question-nav-sidebar">
               <h4 className="nav-title">Questions ({currentQuestions.length})</h4>
+              <div className="q-nav-progress">
+                <div
+                  className="q-nav-progress-track"
+                  role="progressbar"
+                  aria-label="Answered questions"
+                  aria-valuenow={progressPct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <div className="q-nav-progress-fill" style={{ width: `${progressPct}%` }} />
+                </div>
+              </div>
               <div className="question-nav-list">
                 {currentQuestions.map((q, idx) => {
                   const answered = isQuestionAnswered(q.questionId);
@@ -469,6 +481,14 @@ export const InterviewPrepPage = () => {
                       key={q.questionId}
                       className={`q-nav-item ${isCurrent ? "active" : ""} ${answered ? "answered" : ""}`}
                       onClick={() => setActiveQuestionIndex(idx)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setActiveQuestionIndex(idx);
+                        }
+                      }}
                     >
                       <div className="q-nav-index">Q{idx + 1}</div>
                       <div className="q-nav-body">

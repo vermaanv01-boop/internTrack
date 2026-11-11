@@ -53,12 +53,12 @@ export const DashboardPage = () => {
   const { overview = {}, pipeline = {}, trend = [], recentApplications = [] } = data || {};
 
   const statCards = [
-    { label: "Total Applications", value: overview.totalApplications || 0, icon: Briefcase, color: "var(--color-primary)" },
-    { label: "This Month", value: overview.applicationsThisMonth || 0, icon: Calendar, color: "var(--color-gold)" },
-    { label: "Pending Review", value: overview.pendingApplications || 0, icon: Clock, color: "var(--color-warning)" },
-    { label: "Interviews", value: overview.interviews || 0, icon: Award, color: "var(--color-info)" },
-    { label: "Offers Received", value: overview.offers || 0, icon: CheckCircle, color: "var(--color-success)" },
-    { label: "Rejections", value: overview.rejections || 0, icon: XCircle, color: "var(--color-danger)" },
+    { label: "Total Applications", value: overview.totalApplications || 0, icon: Briefcase, color: "var(--color-primary)", meta: "All-time pipeline" },
+    { label: "This Month", value: overview.applicationsThisMonth || 0, icon: Calendar, color: "var(--color-gold)", meta: "New submissions" },
+    { label: "Pending Review", value: overview.pendingApplications || 0, icon: Clock, color: "var(--color-warning)", meta: "Awaiting response" },
+    { label: "Interviews", value: overview.interviews || 0, icon: Award, color: "var(--color-info)", meta: "Scheduled rounds" },
+    { label: "Offers Received", value: overview.offers || 0, icon: CheckCircle, color: "var(--color-success)", meta: "Converted outcomes" },
+    { label: "Rejections", value: overview.rejections || 0, icon: XCircle, color: "var(--color-danger)", meta: "Closed out" },
   ];
 
   const pipelineStages = [

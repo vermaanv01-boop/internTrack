@@ -15,6 +15,7 @@ export const ResumesPage = () => {
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const fileInputRef = useRef(null);

@@ -28,6 +28,63 @@ const getErrorState = (error, fallbackMessage) => {
   };
 };
 
+const AuthShell = ({ eyebrow, title, subtitle, children, footer }) => (
+  <div className="auth-page">
+    <div className="auth-shell">
+      <aside className="auth-brand-panel" aria-label="InternTrack AI overview">
+        <div className="auth-brand-top">
+          <div className="auth-brand-mark">IT</div>
+          <div className="auth-brand-text">
+            <span className="auth-brand-name">InternTrack AI</span>
+            <span className="auth-brand-sub">Career intelligence</span>
+          </div>
+        </div>
+
+        <div className="auth-brand-copy">
+          <span className="auth-brand-eyebrow">Premium career workspace</span>
+          <h1 className="auth-brand-heading">
+            Turn every application into a deliberate step forward.
+          </h1>
+          <p className="auth-brand-desc">
+            Track your pipeline, align your resume to each role, and rehearse interviews with
+            structured feedback.
+          </p>
+        </div>
+
+        <ul className="auth-brand-points">
+          <li>Pipeline analytics that surface momentum</li>
+          <li>Resume-to-role fit scoring with clear gaps</li>
+          <li>Mock interviews graded question by question</li>
+        </ul>
+
+        <div className="auth-brand-footer">
+          <Lock size={14} aria-hidden="true" />
+          <span>Private by design. Your career data stays yours.</span>
+        </div>
+      </aside>
+
+      <section className="auth-panel">
+        <div className="auth-panel-inner">
+          <div className="auth-mobile-brand">
+            <div className="auth-brand-mark">IT</div>
+            <span className="auth-brand-name">InternTrack AI</span>
+          </div>
+
+          <div className="auth-header">
+            <span className="auth-eyebrow">{eyebrow}</span>
+            <h2 className="auth-title">{title}</h2>
+            <p className="auth-subtitle">{subtitle}</p>
+          </div>
+
+          {children}
+
+          <div className="auth-footer">{footer}</div>
+        </div>
+      </section>
+    </div>
+  </div>
+);
+
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

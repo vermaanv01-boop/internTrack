@@ -244,6 +244,10 @@ export const ResumesPage = () => {
                   <div className="resume-feature-row">
                     <span className="resume-feature-label">Text Extracted:</span>
                     <span className="resume-feature-val">
+                      <span
+                        className={`resume-status-dot ${res.hasExtractedText ? "ready" : "missing"}`}
+                        aria-hidden="true"
+                      />
                       {res.hasExtractedText ? (
                         <span className="text-success font-semibold">Ready ({res.textLength} chars)</span>
                       ) : (

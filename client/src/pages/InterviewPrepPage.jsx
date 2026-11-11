@@ -7,7 +7,7 @@ import {
   Trash2
 } from "lucide-react";
 import { resumeService, interviewPrepService } from "../services";
-import { EmptyState, LoadingState, Modal, Pagination } from "../components/common";
+import { EmptyState, LoadingState, Modal, Pagination, ScoreBadge } from "../components/common";
 
 export const InterviewPrepPage = () => {
   const [resumes, setResumes] = useState([]);

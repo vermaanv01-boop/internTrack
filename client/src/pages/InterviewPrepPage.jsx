@@ -396,9 +396,18 @@ export const InterviewPrepPage = () => {
                     Performance breakdown evaluated across all attempted categories.
                   </p>
                 </div>
-                <div className="completion-score-badge">
-                  <div className="completion-score-num">{completionResult.overallScore}%</div>
-                  <div className="completion-score-label">Overall Score</div>
+                <div
+                  className="completion-score-ring"
+                  style={{
+                    backgroundImage: `conic-gradient(var(--color-primary) ${Math.max(0, Math.min(100, completionResult.overallScore ?? 0))}%, var(--bg-surface-hover) 0)`,
+                  }}
+                  role="img"
+                  aria-label={`Overall interview score ${completionResult.overallScore ?? 0} percent`}
+                >
+                  <div className="completion-score-ring-inner">
+                    <div className="completion-score-num">{completionResult.overallScore}%</div>
+                    <div className="completion-score-label">Overall Score</div>
+                  </div>
                 </div>
               </div>
 

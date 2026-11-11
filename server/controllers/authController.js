@@ -20,6 +20,17 @@ const responseForDuplicateEmail = (res) =>
     errors: { email: "An account with this email already exists" },
   });
 
+const isDuplicateEmailError = (error) => {
+  if (!error || error.code !== 11000) {
+    return false;
+  }
+
+  return Boolean(
+    (error.keyPattern && Object.prototype.hasOwnProperty.call(error.keyPattern, "email")) ||
+      (error.keyValue && Object.prototype.hasOwnProperty.call(error.keyValue, "email"))
+  );
+};
+
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {
     const error = new Error("JWT_SECRET is not configured");
@@ -65,8 +76,15 @@ const registerUser = async (req, res, next) => {
       user: toSafeUser(user),
     });
   } catch (error) {
-    if (error && error.code === 11000) {
+    if (isDuplicateEmailError(error)) {
       return responseForDuplicateEmail(res);
+    }
+
+    if (error && error.code === 11000) {
+      logger.error("Unexpected duplicate key while registering user", {
+        keyPattern: error.keyPattern,
+      });
+      return next(error);
     }
 
     logger.error("Error registering user", { error });
@@ -141,10 +159,15 @@ const updateUser = async (req, res, next) => {
       user: user ? toSafeUser(user) : undefined,
     });
   } catch (error) {
+    if (isDuplicateEmailError(error)) {
+      return responseForDuplicateEmail(res);
+    }
+
     if (error && error.code === 11000) {
-      return res.status(400).json({
-        message: "User already exists",
+      logger.error("Unexpected duplicate key while updating user", {
+        keyPattern: error.keyPattern,
       });
+      return next(error);
     }
 
     logger.error("Error updating user", { error });

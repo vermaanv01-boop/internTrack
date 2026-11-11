@@ -128,6 +128,16 @@ export const MatchingPage = () => {
     const strengths = result.strengths || [];
     const improvements = result.improvements || [];
     const scoreBreakdown = result.scoreBreakdown || {};
+    const keywordCoverage = result.keywordAnalysis?.coverage;
+    const breakdownItems = [
+      { label: "Skills Weight", value: scoreBreakdown.skillsScore },
+      { label: "Experience Weight", value: scoreBreakdown.experienceScore },
+      { label: "Education Weight", value: scoreBreakdown.educationScore },
+      {
+        label: "Keyword Density",
+        value: keywordCoverage ? Math.round(keywordCoverage * 100) : null,
+      },
+    ];
 
     return (
       <div className="card match-result-card" style={{ marginTop: 24 }}>

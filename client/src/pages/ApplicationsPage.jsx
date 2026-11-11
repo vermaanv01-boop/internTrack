@@ -211,6 +211,7 @@ export const ApplicationsPage = () => {
               placeholder="Search by company or role..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              aria-label="Search applications by company or role"
             />
           </div>
 

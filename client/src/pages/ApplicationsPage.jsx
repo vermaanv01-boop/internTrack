@@ -74,6 +74,13 @@ export const ApplicationsPage = () => {
     loadApplications(1);
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setStatusFilter("");
+    setSortOrder("newest");
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
   const openCreateModal = () => {
     setEditingId(null);
     setFormData(INITIAL_FORM);
@@ -182,6 +189,7 @@ export const ApplicationsPage = () => {
     <div className="applications-page">
       <div className="page-header">
         <div>
+          <span className="page-eyebrow">Pipeline control</span>
           <h1 className="page-title">Application Management</h1>
           <p className="page-subtitle">Track, filter and update every internship & job pipeline milestone</p>
         </div>
@@ -190,7 +198,7 @@ export const ApplicationsPage = () => {
         </button>
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
       {/* Filter and Search Bar */}
       <div className="card filter-bar-card">

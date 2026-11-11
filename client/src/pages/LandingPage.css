@@ -44,6 +44,12 @@
   outline-offset: 3px;
 }
 
+#features,
+#how-it-works,
+#product {
+  scroll-margin-top: 86px;
+}
+
 /* Reveal animation */
 .landing-reveal {
   opacity: 0;

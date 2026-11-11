@@ -22,6 +22,44 @@ const redact = (value) =>
     const count = await collection.countDocuments();
     console.log("USER_COUNT=" + count);
 
+    const sample = await collection.findOne({});
+    console.log("SAMPLE_FIELDS=" + JSON.stringify(Object.keys(sample || {})));
+    console.log(
+      "SAMPLE_HAS_PHONE=" +
+        Boolean(sample && Object.prototype.hasOwnProperty.call(sample, "phone"))
+    );
+
+    const session = mongoose.startSession();
+    try {
+      session.startTransaction();
+      try {
+        await collection.insertOne(
+          {
+            name: "Diagnostic",
+            email: `diagnostic-${Date.now()}@example.invalid`,
+            password: "diagnostic-not-a-real-hash",
+            timestamp: new Date(),
+          },
+          { session }
+        );
+        console.log("TRANSACTION_INSERT=unexpected_success");
+      } catch (error) {
+        const keyValue = error.keyValue || null;
+        console.log("TRANSACTION_INSERT=error");
+        console.log("INSERT_ERROR_CODE=" + error.code);
+        console.log("INSERT_ERROR_KEY_PATTERN=" + JSON.stringify(error.keyPattern || null));
+        console.log(
+          "INSERT_ERROR_KEY_VALUE_FIELDS=" +
+            JSON.stringify(keyValue ? Object.keys(keyValue) : [])
+        );
+        console.log("INSERT_ERROR_PHONE_IS_NULL=" + Boolean(keyValue && keyValue.phone === null));
+      } finally {
+        await session.abortTransaction().catch(() => {});
+      }
+    } finally {
+      await session.endSession().catch(() => {});
+    }
+
     for (const index of indexes) {
       if (!index.unique) continue;
       const fields = Object.keys(index.key);

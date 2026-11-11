@@ -352,7 +352,23 @@ export const InterviewPrepPage = () => {
                 {currentSession.jobTitle || "Role Preparation"}{currentSession.company ? ` — ${currentSession.company}` : ""}
               </h2>
               <div className="text-muted" style={{ fontSize: "0.85rem" }}>
-                Difficulty: <span className="font-semibold">{currentSession.difficulty}</span> • Total Questions: {currentQuestions.length} • Answered: {currentAnswers.length}
+                Difficulty: <span className="font-semibold">{currentSession.difficulty}</span> • Total Questions: {currentQuestions.length} • Answered: {answeredCount}
+              </div>
+              <div className="live-progress">
+                <div className="live-progress-head">
+                  <span>Session progress</span>
+                  <span>{answeredCount} / {currentQuestions.length}</span>
+                </div>
+                <div
+                  className="live-progress-track"
+                  role="progressbar"
+                  aria-label="Interview session progress"
+                  aria-valuenow={progressPct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <div className="live-progress-fill" style={{ width: `${progressPct}%` }} />
+                </div>
               </div>
             </div>
 

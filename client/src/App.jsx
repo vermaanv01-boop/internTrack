@@ -31,6 +31,14 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <LandingPage />
+              </PublicRoute>
+            }
+          />
+          <Route
             path="/login"
             element={
               <PublicRoute>
@@ -48,19 +56,17 @@ export default function App() {
           />
 
           <Route
-            path="/"
             element={
               <ProtectedRoute>
                 <AppLayout />
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="applications" element={<ApplicationsPage />} />
-            <Route path="resumes" element={<ResumesPage />} />
-            <Route path="matching" element={<MatchingPage />} />
-            <Route path="interview-prep" element={<InterviewPrepPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/applications" element={<ApplicationsPage />} />
+            <Route path="/resumes" element={<ResumesPage />} />
+            <Route path="/matching" element={<MatchingPage />} />
+            <Route path="/interview-prep" element={<InterviewPrepPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

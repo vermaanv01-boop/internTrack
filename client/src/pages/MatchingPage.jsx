@@ -316,7 +316,7 @@ export const MatchingPage = () => {
         <>
           <div className="card">
             <form onSubmit={handleRunAnalysis}>
-              {formError && <div className="alert alert-danger">{formError}</div>}
+              {formError && <div className="alert alert-danger" role="alert">{formError}</div>}
 
               <div className="form-grid-3">
                 <div className="form-group">

@@ -417,12 +417,27 @@ export const InterviewPrepPage = () => {
                   <div key={i} className="cat-card">
                     <div className="cat-header">
                       <span className="cat-name">{cat.category}</span>
-                      <span className="cat-score font-semibold">
-                        {cat.averageScore !== null ? `${cat.averageScore}%` : "Unattempted"}
+                      <span className={`cat-score font-semibold ${getScoreTone(cat.averageScore)}`}>
+                        {typeof cat.averageScore === "number" ? `${cat.averageScore}%` : "Unattempted"}
                       </span>
                     </div>
                     <div className="cat-meta-text">
                       {cat.attempted} of {cat.total} answered
+                    </div>
+                    <div
+                      className="cat-score-bar"
+                      role="progressbar"
+                      aria-label={`${cat.category} performance`}
+                      aria-valuenow={typeof cat.averageScore === "number" ? cat.averageScore : 0}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    >
+                      <div
+                        className={`cat-score-fill ${getScoreTone(cat.averageScore)}`}
+                        style={{
+                          width: `${typeof cat.averageScore === "number" ? Math.max(0, Math.min(100, cat.averageScore)) : 0}%`,
+                        }}
+                      />
                     </div>
                   </div>
                 ))}

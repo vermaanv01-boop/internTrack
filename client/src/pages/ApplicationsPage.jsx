@@ -250,6 +250,17 @@ export const ApplicationsPage = () => {
 
       {/* Applications Listing */}
       <div className="card" style={{ marginTop: 20 }}>
+        <div className="card-header listing-card-header">
+          <div>
+            <span className="card-kicker">Tracked records</span>
+            <h3 className="card-title">Applications ({pagination.total || applications.length})</h3>
+          </div>
+          {(search || statusFilter || sortOrder !== "newest") && (
+            <button type="button" className="btn btn-secondary btn-sm" onClick={handleClearFilters}>
+              Clear filters
+            </button>
+          )}
+        </div>
         {loading ? (
           <LoadingState message="Fetching application records..." />
         ) : applications.length === 0 ? (

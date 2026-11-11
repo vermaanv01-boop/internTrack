@@ -686,9 +686,11 @@ export const InterviewPrepPage = () => {
                           <span className="font-semibold">{sess.questionCount || 0}</span>
                         </td>
                         <td>
-                          <span className="font-semibold">
-                            {sess.overallScore !== null && sess.overallScore !== undefined ? `${sess.overallScore}%` : "—"}
-                          </span>
+                          {typeof sess.overallScore === "number" ? (
+                            <ScoreBadge score={sess.overallScore} />
+                          ) : (
+                            <span className="text-muted">—</span>
+                          )}
                         </td>
                         <td className="text-muted" style={{ fontSize: "0.85rem" }}>
                           {sess.createdAt ? new Date(sess.createdAt).toLocaleDateString() : "—"}

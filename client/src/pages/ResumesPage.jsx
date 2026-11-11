@@ -37,12 +37,8 @@ export const ResumesPage = () => {
     loadResumes();
   }, [loadResumes]);
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
+  const uploadFile = async (file) => {
     if (!file) return;
-
-    // Reset input
-    e.target.value = "";
 
     setUploadError("");
     setUploading(true);
@@ -54,6 +50,32 @@ export const ResumesPage = () => {
       setUploadError(err.message || "Failed to upload resume. PDF or DOCX up to 5MB supported.");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+
+    await uploadFile(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (uploading) return;
+    uploadFile(e.dataTransfer.files?.[0]);
+  };
+
+  const handleDragLeave = (e) => {
+    if (e.currentTarget.contains(e.relatedTarget)) return;
+    setIsDragging(false);
+  };
+
+  const handleUploadZoneKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (!uploading) fileInputRef.current?.click();
     }
   };
 

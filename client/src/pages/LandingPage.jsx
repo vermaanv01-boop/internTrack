@@ -13,10 +13,8 @@ import {
   Lock,
   Menu,
   MessageSquare,
-  Search,
   Sparkles,
   Target,
-  TrendingUp,
   X,
 } from "lucide-react";
 import "./LandingPage.css";
@@ -179,6 +177,7 @@ const MatchRing = () => (
 const DashboardPreview = ({ compact = false }) => (
   <div
     className={`landing-preview${compact ? " landing-preview--compact" : ""}`}
+    role="img"
     aria-label="Illustrative InternTrack AI workspace preview"
   >
     <aside className="landing-preview-sidebar">

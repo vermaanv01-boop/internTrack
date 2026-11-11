@@ -227,7 +227,10 @@ export const ResumesPage = () => {
                       {res.originalName}
                     </div>
                     <div className="resume-file-meta">
-                      {formatFileSize(res.fileSize)} • {new Date(res.createdAt).toLocaleDateString()}
+                      <span className="resume-type-badge">{getFileType(res.originalName)}</span>
+                      <span>{formatFileSize(res.fileSize)}</span>
+                      <span aria-hidden="true">•</span>
+                      <span>{new Date(res.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
                   {res.isActive && (

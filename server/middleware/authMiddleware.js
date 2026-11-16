@@ -189,6 +189,7 @@ const requireCompanyRole = (...roles) => {
 module.exports = {
   protect,
   requireRole,
+  requireAdmin,
   requireVerified,
   requireCompanyMember,
   requireCompanyRole,

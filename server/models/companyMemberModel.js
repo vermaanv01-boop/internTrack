@@ -53,4 +53,9 @@ companyMemberSchema.index({ company: 1, user: 1 }, { unique: true });
 companyMemberSchema.index({ company: 1, status: 1 });
 companyMemberSchema.index({ user: 1, status: 1 });
 
-module.exports = mongoose.model("CompanyMember", companyMemberSchema);
+const CompanyMember = mongoose.model("CompanyMember", companyMemberSchema);
+
+CompanyMember.COMPANY_MEMBER_ROLES = COMPANY_MEMBER_ROLES;
+CompanyMember.COMPANY_MEMBER_STATUSES = COMPANY_MEMBER_STATUSES;
+
+module.exports = CompanyMember;

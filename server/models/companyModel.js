@@ -81,4 +81,9 @@ const companySchema = new mongoose.Schema(
 companySchema.index({ verificationStatus: 1, status: 1 });
 companySchema.index({ emailDomain: 1 }, { sparse: true });
 
-module.exports = mongoose.model("Company", companySchema);
+const Company = mongoose.model("Company", companySchema);
+
+Company.COMPANY_STATUSES = COMPANY_STATUSES;
+Company.COMPANY_VERIFICATION_STATUSES = COMPANY_VERIFICATION_STATUSES;
+
+module.exports = Company;

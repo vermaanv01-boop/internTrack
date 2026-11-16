@@ -323,7 +323,7 @@ test("rejects missing, inactive, and cross-company memberships", async () => {
   const otherCompanyId = new mongoose.Types.ObjectId();
   const crossCompany = await asUser(
     request(app)
-      .post(`/companies/${otherCompanyId}`)
+      .get(`/companies/${otherCompanyId}`)
       .send({ companyId: String(companyId) }),
   );
 

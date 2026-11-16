@@ -33,6 +33,7 @@ The test command is `node --test tests/*.test.js`. Node executes each test file 
 | --- | --- |
 | `analytics.test.js` | Auth, user-scoped aggregation, zero-data contract, calculations, trend, errors |
 | `applications.test.js` | Auth, create/defaults/validation, list filters/pagination/sort, CRUD ownership |
+| `authorizationMiddleware.test.js` | Database-backed auth, platform/company RBAC, verification guard, escalation and cross-company denial |
 | `e2eIntegration.test.js` | Authentication lifecycle and application CRUD/isolation |
 | `interviewPrep.test.js` | Question generation, provider fallback, generation validation, snapshots |
 | `interviewPrepSession.test.js` | Session lifecycle, answer validation/evaluation, completion, history |
@@ -44,7 +45,7 @@ The test command is `node --test tests/*.test.js`. Node executes each test file 
 | `userProfile.test.js` | Profile update auth/ownership/validation, hashing, privilege-field injection, login token shape |
 | `userRoleMigration.test.js` | Migration defaults, dry-run, explicit-value preservation, idempotency, failure logging |
 
-Current result: **123 passing tests**, including **11 model/migration tests** added for the three-role database foundation and **25 regression tests** added before role work.
+Current result: **135 passing tests**, including **12 authorization-primitive tests**, **11 model/migration tests**, and **25 regression tests** added earlier.
 
 ## Coverage Notes
 
@@ -54,10 +55,12 @@ Current result: **123 passing tests**, including **11 model/migration tests** ad
 - Upload tests use real file buffers and temporary storage cleanup.
 - Local matching and interview evaluation are tested for deterministic behavior.
 - Provider fallback is tested separately from persistence.
+- Database-backed authentication, platform roles, email-verification gating, company membership, and company roles are tested with mocked model queries.
+- Existing job-seeker flows run against active database-backed jobseeker mocks to protect compatibility.
 
 ## Known Limitations
 
-- No real MongoDB integration/e2e tests exist; model indexes and token lifecycle are tested in-process.
+- No real MongoDB integration/e2e tests exist; model indexes, token lifecycle, and authorization queries are tested in-process.
 - No browser/e2e tests are configured for the React client.
 - No load, concurrency, or multi-instance JWT revocation tests exist.
-- Current API tests still describe the job-seeker-only contract. Role and company-membership models are validated, but no authorization behavior is implemented or tested yet.
+- Authorization primitives are tested directly, but no HR/admin or company-scoped API routes exist yet.

@@ -24,6 +24,7 @@ Current contract for the InternTrack AI backend. This document describes behavio
   - `{ "message": "Not authorized, invalid authorization header" }`
   - `{ "message": "Not authorized, token failed verification" }`
   - `{ "message": "Not authorized, invalid token payload" }`
+  - `{ "message": "Not authorized, invalid or inactive user" }`
 - Unknown routes return `404` with `{ "message": "Route not found" }`.
 - Unexpected failures return `500` with `{ "message": "Server error" }`.
 - User-owned resources return `404` rather than `403` when an authenticated user requests another user's resource.
@@ -33,9 +34,10 @@ Current contract for the InternTrack AI backend. This document describes behavio
 - Passwords are hashed with bcrypt before persistence.
 - A successful login returns an HS256 JWT expiring after 30 days.
 - JWT payload: `{ "id": "<user ObjectId>" }`.
-- Middleware currently sets `req.user = { id: decoded.id }`; it does not load the user document and does not attach a role.
-- The User data model now has `role`, `emailVerified`, and `status`, but authentication and authorization behavior is unchanged. No endpoint enforces role or company membership yet.
-- Company, CompanyMember, and EmailVerificationToken models exist for future HR/admin flows, but no routes use them yet.
+- Protected-request middleware loads the current User by the token `id`, excludes the password hash, and sets `req.user` to the database document. JWT role claims are ignored.
+- Deleted users, suspended users (`status !== "active"`), and users with an invalid platform role are rejected with `401`.
+- The User data model has `role`, `emailVerified`, and `status`. Reusable `requireRole`, `requireVerified`, `requireCompanyMember`, and `requireCompanyRole` middleware exists, but no job-seeker, HR, or admin endpoint mounts the new guards yet.
+- Company, CompanyMember, and EmailVerificationToken models and company authorization primitives exist for future HR/admin flows, but no company routes use them yet.
 - Logout is stateless: the client discards the token; no server-side revocation list exists.
 - Auth endpoints use an auth rate limiter: 20 requests per 15 minutes per client by default.
 - Matching analysis and interview generation use a sensitive-action limiter: 60 requests per 15 minutes per client by default.

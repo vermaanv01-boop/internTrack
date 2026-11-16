@@ -80,6 +80,7 @@ const buildVerificationUrl = (token) => {
     process.env.EMAIL_VERIFICATION_URL || "",
   ).trim();
   const clientUrl = String(process.env.CLIENT_URL || "")
+    .split(",")[0]
     .trim()
     .replace(/\/+$/, "");
   const baseUrl = configuredUrl || (clientUrl ? `${clientUrl}/verify-email` : "");
@@ -92,6 +93,14 @@ const buildVerificationUrl = (token) => {
   }
 
   const url = new URL(baseUrl);
+
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw configurationError(
+      "Verification URL must be an http or https URL",
+      "EMAIL_VERIFICATION_URL_NOT_CONFIGURED",
+    );
+  }
+
   url.searchParams.set("token", token);
   return url.toString();
 };

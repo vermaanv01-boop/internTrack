@@ -94,7 +94,7 @@ const upsertCompany = async (slug, defaults, CompanyModel) => {
 
     return CompanyModel.findOneAndUpdate(
       { _id: existingCompany._id },
-      update,
+      { $set: update.$set },
       { new: true },
     );
   }
@@ -135,7 +135,7 @@ const upsertMembership = async (company, user, now, CompanyMemberModel) => {
 
     return CompanyMemberModel.findOneAndUpdate(
       { _id: existingMembership._id },
-      update,
+      { $set: update.$set },
       { new: true },
     );
   }

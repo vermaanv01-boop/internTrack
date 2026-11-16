@@ -54,8 +54,8 @@ test("builds the verification URL from EMAIL_VERIFICATION_URL and preserves exis
   assert.equal(url.searchParams.get("token"), "token-with-+/=");
 });
 
-test("falls back to CLIENT_URL/verify-email and removes trailing slashes", () => {
-  process.env.CLIENT_URL = "http://localhost:5173///";
+test("falls back to the first CLIENT_URL origin and removes trailing slashes", () => {
+  process.env.CLIENT_URL = "http://localhost:5173///,http://other.example.com";
 
   const url = new URL(emailService.buildVerificationUrl("raw-token"));
 
@@ -65,6 +65,17 @@ test("falls back to CLIENT_URL/verify-email and removes trailing slashes", () =>
 });
 
 test("rejects verification URL generation when no URL configuration exists", () => {
+  assert.throws(
+    () => emailService.buildVerificationUrl("raw-token"),
+    (error) =>
+      error.code === "EMAIL_VERIFICATION_URL_NOT_CONFIGURED" &&
+      error.statusCode === 503,
+  );
+});
+
+test("rejects non-http verification URL configuration", () => {
+  process.env.EMAIL_VERIFICATION_URL = "javascript:alert(1)";
+
   assert.throws(
     () => emailService.buildVerificationUrl("raw-token"),
     (error) =>

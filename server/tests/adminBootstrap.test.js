@@ -7,7 +7,6 @@ const {
     AdminProvisioningError,
     provisionAdmin,
 } = require("../services/adminBootstrap");
-const { hashPassword } = require("../utils/password");
 
 const silentLogger = {
     error: () => {},

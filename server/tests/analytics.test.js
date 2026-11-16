@@ -174,7 +174,14 @@ test("calculates dashboard totals, pipeline counts, rates, trend, and recent app
         { month: months[4], count: 0 },
         { month: months[5], count: 5 },
     ]);
-    assert.deepEqual(response.body.recentApplications, aggregateResult[0].recent);
+    assert.equal(response.body.recentApplications.length, 1);
+    assert.equal(response.body.recentApplications[0].company, "Acme");
+    assert.equal(response.body.recentApplications[0].role, "Software Intern");
+    assert.equal(response.body.recentApplications[0].status, "interview");
+    assert.equal(
+        response.body.recentApplications[0].createdAt,
+        "2026-02-01T00:00:00.000Z",
+    );
 });
 
 test("handles malformed aggregate output defensively", async () => {

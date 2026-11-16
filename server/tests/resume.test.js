@@ -16,8 +16,12 @@ process.env.JWT_SECRET = "test-jwt-secret-for-resume-tests";
 process.env.RESUME_UPLOAD_DIR = tempDir;
 
 const Resume = require("../models/resumeModel");
+const User = require("../models/userModel");
 const resumeRoutes = require("../routes/resumeRoutes");
 const { MAX_FILE_SIZE } = require("../utils/resumeContent");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 
 const app = express();
 app.use(express.json());

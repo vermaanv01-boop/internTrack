@@ -8,7 +8,11 @@ const mongoose = require("mongoose");
 process.env.JWT_SECRET = "test-jwt-secret-for-interview-lifecycle";
 
 const InterviewPrepSession = require("../models/interviewPrepSessionModel");
+const User = require("../models/userModel");
 const interviewPrepRoutes = require("../routes/interviewPrepRoutes");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 const {
     EVALUATION_FALLBACK_REASON,
     evaluateInterviewAnswer,

@@ -9,7 +9,11 @@ process.env.JWT_SECRET = "test-jwt-secret-for-interview-prep";
 
 const InterviewPrepSession = require("../models/interviewPrepSessionModel");
 const Resume = require("../models/resumeModel");
+const User = require("../models/userModel");
 const interviewPrepRoutes = require("../routes/interviewPrepRoutes");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 const {
     FALLBACK_REASON,
     generateInterviewQuestions,

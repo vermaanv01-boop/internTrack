@@ -8,8 +8,12 @@ const mongoose = require("mongoose");
 process.env.JWT_SECRET = "test-jwt-secret-for-analytics-tests";
 
 const Application = require("../models/applicationModel");
+const User = require("../models/userModel");
 const analyticsRoutes = require("../routes/analyticsRoutes");
 const { errorHandler } = require("../middleware/errorHandler");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 
 const app = express();
 app.use(express.json());

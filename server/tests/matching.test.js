@@ -9,7 +9,11 @@ process.env.JWT_SECRET = "test-jwt-secret-for-matching-tests";
 
 const Resume = require("../models/resumeModel");
 const MatchingAnalysis = require("../models/matchingAnalysisModel");
+const User = require("../models/userModel");
 const matchingRoutes = require("../routes/matchingRoutes");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 const { analyze } = require("../services/matching/localMatchingProvider");
 const { extractSkills } = require("../services/matching/skillMatcher");
 

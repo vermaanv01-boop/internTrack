@@ -9,7 +9,11 @@ process.env.JWT_SECRET = "test-jwt-secret-for-matching-history";
 
 const MatchingAnalysis = require("../models/matchingAnalysisModel");
 const Resume = require("../models/resumeModel");
+const User = require("../models/userModel");
 const matchingRoutes = require("../routes/matchingRoutes");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 
 const app = express();
 app.use(express.json());

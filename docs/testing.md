@@ -75,5 +75,7 @@ Current result: **178 passing tests**, including **6 admin provisioning tests**,
 - No browser/e2e tests are configured for the React client.
 - Concurrency is tested at the request/mock level; no multi-instance race or real Mongo transaction tests exist.
 - No multi-instance JWT revocation tests exist.
+- The admin bootstrap CLI is not exercised against a real MongoDB instance; its service layer is tested with injected stubs.
 - HR authentication routes exist, but no HR job-management or company-scoped API routes exist yet.
+- No public admin management API or admin frontend exists.
 - No real SMTP delivery test exists; SMTP credentials and mail servers are not available in the test environment.

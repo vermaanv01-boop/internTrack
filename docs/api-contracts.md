@@ -1,6 +1,6 @@
 # API Contracts
 
-Current contract for the InternTrack AI backend. This document describes behavior that exists today and must be preserved when role-based access is introduced.
+Current contract for the InternTrack AI backend, including role-based HR registration and company onboarding.
 
 ## Conventions
 
@@ -36,10 +36,14 @@ Current contract for the InternTrack AI backend. This document describes behavio
 - JWT payload: `{ "id": "<user ObjectId>" }`.
 - Protected-request middleware loads the current User by the token `id`, excludes the password hash, and sets `req.user` to the database document. JWT role claims are ignored.
 - Deleted users, suspended users (`status !== "active"`), and users with an invalid platform role are rejected with `401`.
-- The User data model has `role`, `emailVerified`, and `status`. Reusable `requireRole`, `requireVerified`, `requireCompanyMember`, and `requireCompanyRole` middleware exists, but no job-seeker, HR, or admin endpoint mounts the new guards yet.
-- Company, CompanyMember, and EmailVerificationToken models and company authorization primitives exist for future HR/admin flows, but no company routes use them yet.
+- The User data model has `role`, `emailVerified`, and `status`. Reusable `requireRole`, `requireVerified`, `requireCompanyMember`, and `requireCompanyRole` middleware exists. No HR job-management routes exist yet, but HR authentication routes are public until email verification completes.
+- HR registration and email verification never trust client-supplied role, verification, status, company membership, ownership, or privilege fields.
+- Login remains available to existing accounts and returns a database-backed token. Unverified HR accounts cannot satisfy `requireVerified` on protected HR routes.
+- Company, CompanyMember, and EmailVerificationToken models are used by HR onboarding. Company-scoped API routes remain future work.
 - Logout is stateless: the client discards the token; no server-side revocation list exists.
 - Auth endpoints use an auth rate limiter: 20 requests per 15 minutes per client by default.
+- Email verification endpoints use a verification limiter: 20 requests per 15 minutes per client by default.
+- Verification-email resend uses a resend limiter: 5 requests per 15 minutes per client by default.
 - Matching analysis and interview generation use a sensitive-action limiter: 60 requests per 15 minutes per client by default.
 
 ## Users

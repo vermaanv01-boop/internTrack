@@ -3,6 +3,19 @@ const User = require("../models/userModel");
 const Company = require("../models/companyModel");
 const CompanyMember = require("../models/companyMemberModel");
 
+const EMAIL_DOMAIN_PATTERN =
+  /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/i;
+
+const getEmailDomain = (email) => {
+  const domain = String(email || "")
+    .split("@")
+    .pop()
+    .trim()
+    .toLowerCase();
+
+  return EMAIL_DOMAIN_PATTERN.test(domain) ? domain : undefined;
+};
+
 const slugify = (value) =>
   String(value)
     .normalize("NFKD")
@@ -161,9 +174,14 @@ const onboardHrUser = async ({
       name: user.pendingCompanyName,
       slug,
     };
+    const emailDomain = getEmailDomain(user.email);
 
     if (user.pendingCompanyWebsite) {
       companyDefaults.website = user.pendingCompanyWebsite;
+    }
+
+    if (emailDomain) {
+      companyDefaults.emailDomain = emailDomain;
     }
 
     company = await upsertCompany(slug, companyDefaults, CompanyModel);

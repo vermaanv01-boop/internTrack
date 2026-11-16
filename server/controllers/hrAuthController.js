@@ -4,7 +4,7 @@ const EmailVerificationToken = require("../models/emailVerificationTokenModel");
 const { generateToken } = require("./authController");
 const { onboardHrUser } = require("../services/hrOnboarding");
 const { issueVerificationToken } = require("../services/verificationService");
-const { sendVerificationEmail } = require("../services/emailService");
+const emailService = require("../services/emailService");
 const { hashVerificationToken } = require("../utils/verificationToken");
 const {
   validateHrRegistration,

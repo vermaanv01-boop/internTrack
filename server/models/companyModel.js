@@ -58,6 +58,7 @@ const companySchema = new mongoose.Schema(
         },
         status: {
             type: String,
+            required: [true, "Company status is required"],
             enum: {
                 values: COMPANY_STATUSES,
                 message: `Company status must be one of: ${COMPANY_STATUSES.join(", ")}`,
@@ -66,6 +67,7 @@ const companySchema = new mongoose.Schema(
         },
         verificationStatus: {
             type: String,
+            required: [true, "Verification status is required"],
             enum: {
                 values: COMPANY_VERIFICATION_STATUSES,
                 message: `Verification status must be one of: ${COMPANY_VERIFICATION_STATUSES.join(", ")}`,

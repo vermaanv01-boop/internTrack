@@ -34,7 +34,8 @@ Current contract for the InternTrack AI backend. This document describes behavio
 - A successful login returns an HS256 JWT expiring after 30 days.
 - JWT payload: `{ "id": "<user ObjectId>" }`.
 - Middleware currently sets `req.user = { id: decoded.id }`; it does not load the user document and does not attach a role.
-- There are currently no roles, company memberships, or email-verification fields.
+- The User data model now has `role`, `emailVerified`, and `status`, but authentication and authorization behavior is unchanged. No endpoint enforces role or company membership yet.
+- Company, CompanyMember, and EmailVerificationToken models exist for future HR/admin flows, but no routes use them yet.
 - Logout is stateless: the client discards the token; no server-side revocation list exists.
 - Auth endpoints use an auth rate limiter: 20 requests per 15 minutes per client by default.
 - Matching analysis and interview generation use a sensitive-action limiter: 60 requests per 15 minutes per client by default.

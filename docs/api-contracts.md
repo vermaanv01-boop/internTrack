@@ -193,6 +193,127 @@ Success: `200`
 { "message": "User logged out successfully" }
 ```
 
+## HR Authentication
+
+HR self-registration creates an active platform user with `role: "hr"` and `emailVerified: false`. It does not create a Company or CompanyMember until the email is verified. Pending company details are stored on the User record only until onboarding succeeds.
+
+Email verification tokens are cryptographically random, single-use, and stored only as SHA-256 hashes. Raw tokens are sent by email and are never returned in API responses or written to logs. Tokens expire after `EMAIL_VERIFICATION_TOKEN_TTL_MINUTES` (default `60`).
+
+SMTP configuration is provided exclusively through environment variables. `EMAIL_VERIFICATION_URL` defaults to `CLIENT_URL/verify-email` when omitted.
+
+### `POST /api/hr/auth/register`
+
+Public. Rate-limited by the auth limiter.
+
+Request:
+
+```json
+{
+  "name": "Hiring Manager",
+  "email": "hr@acme.example.com",
+  "password": "password123",
+  "companyName": "Acme Labs",
+  "companyWebsite": "https://acme.example.com"
+}
+```
+
+- `name`: required string, trimmed, 1-100 characters.
+- `email`: required valid email, trimmed and lowercased, maximum 254 characters.
+- `password`: required string, 8-128 characters; hashed before persistence.
+- `companyName`: required string, trimmed, 1-150 characters.
+- `companyWebsite`: optional valid `http` or `https` URL, maximum 2048 characters.
+- Unknown fields, including `role`, `emailVerified`, `status`, and membership fields, are ignored.
+
+Success: `201`
+
+```json
+{
+  "message": "HR account registered. Please check your email to verify your account.",
+  "user": {
+    "_id": "...",
+    "name": "Hiring Manager",
+    "email": "hr@acme.example.com",
+    "role": "hr",
+    "emailVerified": false,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  }
+}
+```
+
+- Registration never returns a JWT or verification token.
+- No Company or CompanyMember is created before verification.
+- Duplicate email uses the existing `400` duplicate-email envelope.
+- Validation failure uses the standard `400` validation envelope.
+- If SMTP delivery fails, returns `503` with a generic message; the account remains unverified and can use resend later.
+
+### `POST /api/hr/auth/verify-email`
+
+Public. Rate-limited by the email verification limiter.
+
+Request:
+
+```json
+{ "token": "<raw-token-from-email>" }
+```
+
+Success: `200`
+
+```json
+{
+  "message": "Email verified successfully",
+  "user": {
+    "_id": "...",
+    "name": "Hiring Manager",
+    "email": "hr@acme.example.com",
+    "role": "hr",
+    "emailVerified": true,
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  "company": {
+    "_id": "...",
+    "name": "Acme Labs",
+    "slug": "acme-labs-<suffix>",
+    "status": "active",
+    "verificationStatus": "self_registered"
+  },
+  "membership": {
+    "_id": "...",
+    "company": "...",
+    "role": "owner",
+    "status": "active"
+  },
+  "token": "<jwt>"
+}
+```
+
+- Verification is single-use. Replaying a consumed token returns `400` with `{ "message": "Invalid or expired verification token" }`.
+- Missing, malformed, expired, and unknown tokens return the same generic `400` response.
+- Inactive users return `403` with `{ "message": "Account is not active" }`.
+- Onboarding is idempotent: retries reuse the same user-scoped company slug and active `owner` membership.
+- The Company is created or reactivated with `status: "active"`, `verificationStatus: "self_registered"`, a unique slug, and the email domain when valid.
+- A JWT is issued only after successful onboarding and token consumption. A partial onboarding failure does not consume the token, allowing a safe retry.
+- Concurrent verification of the same token succeeds at most once through atomic token consumption.
+
+### `POST /api/hr/auth/resend-verification`
+
+Public. Rate-limited by the resend limiter.
+
+Request:
+
+```json
+{ "email": "hr@acme.example.com" }
+```
+
+Success: `200`
+
+```json
+{ "message": "If an unverified HR account exists, a verification email has been sent." }
+```
+
+- The response is intentionally generic for unknown, verified, suspended, and non-HR accounts.
+- Sending a new email invalidates previous active verification tokens for that user.
+- SMTP delivery failures return `503` with a generic message.
+
 ## Applications
 
 All application endpoints are protected and scoped to the authenticated `req.user.id`.

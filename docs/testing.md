@@ -52,7 +52,7 @@ The test command is `node --test tests/*.test.js`. Node executes each test file 
 | `userProfile.test.js` | Profile update auth/ownership/validation, hashing, privilege-field injection, login token shape |
 | `userRoleMigration.test.js` | Migration defaults, dry-run, explicit-value preservation, idempotency, failure logging |
 
-Current result: **157 passing tests**, including **11 HR authentication tests**, **8 email delivery tests**, **3 HR rate-limit tests**, **12 authorization-primitive tests**, **11 model/migration tests**, and **25 regression tests** added earlier.
+Current result: **178 passing tests**, including **6 admin provisioning tests**, **5 admin authorization tests**, **5 admin CLI tests**, **5 audit-log tests**, **11 HR authentication tests**, **8 email delivery tests**, **3 HR rate-limit tests**, **12 authorization-primitive tests**, **11 model/migration tests**, and **25 regression tests** added earlier.
 
 ## Coverage Notes
 

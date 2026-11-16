@@ -540,7 +540,10 @@ test("a partial onboarding failure does not consume the token and can be retried
 });
 
 test("email delivery failures return a generic 503 without exposing the raw token", async () => {
-  emailService.sendVerificationEmail = async () => {
+  let attemptedToken;
+
+  emailService.sendVerificationEmail = async ({ token }) => {
+    attemptedToken = token;
     const error = new Error("SMTP unavailable");
     error.code = "ESOCKET";
     throw error;
@@ -553,7 +556,8 @@ test("email delivery failures return a generic 503 without exposing the raw toke
     response.body.message,
     "The verification email could not be sent. Please try resending it later.",
   );
-  assert.equal(JSON.stringify(response.body).includes(sentEmails[0]?.token), false);
+  assert.ok(attemptedToken);
+  assert.equal(JSON.stringify(response.body).includes(attemptedToken), false);
   assert.equal(tokens.length, 1);
   assert.equal(companies.length, 0);
   assert.equal(memberships.length, 0);

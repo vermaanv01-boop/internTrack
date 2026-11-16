@@ -63,6 +63,8 @@ Current result: **178 passing tests**, including **6 admin provisioning tests**,
 - Local matching and interview evaluation are tested for deterministic behavior.
 - Provider fallback is tested separately from persistence.
 - Database-backed authentication, platform roles, email-verification gating, company membership, and company roles are tested with mocked model queries.
+- Admin provisioning is tested with injected user-model stubs; the CLI password path is tested with stdin and non-TTY fail-closed behavior.
+- Audit-log metadata sanitization is tested for nested keys, bearer/JWT/database secrets, dates, ObjectIds, circular references, and depth limits.
 - HR registration, token hashing, token rotation, single-use verification, concurrent verification, idempotent onboarding, and partial-failure retries are tested with mocked persistence and email delivery.
 - SMTP delivery is tested with a stubbed Nodemailer transport, not a real mail server.
 - Existing job-seeker flows run against active database-backed jobseeker mocks to protect compatibility.

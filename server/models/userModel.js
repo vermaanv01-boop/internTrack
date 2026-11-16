@@ -16,15 +16,17 @@ const userSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now },
     role: {
         type: String,
+        required: [true, "Role is required"],
         enum: {
             values: USER_ROLES,
             message: `Role must be one of: ${USER_ROLES.join(", ")}`,
         },
         default: "jobseeker",
     },
-    emailVerified: { type: Boolean, default: true },
+    emailVerified: { type: Boolean, required: true, default: true },
     status: {
         type: String,
+        required: [true, "Status is required"],
         enum: {
             values: USER_STATUSES,
             message: `Status must be one of: ${USER_STATUSES.join(", ")}`,

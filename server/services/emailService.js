@@ -92,7 +92,16 @@ const buildVerificationUrl = (token) => {
     );
   }
 
-  const url = new URL(baseUrl);
+  let url;
+
+  try {
+    url = new URL(baseUrl);
+  } catch (error) {
+    throw configurationError(
+      "Verification URL is not valid",
+      "EMAIL_VERIFICATION_URL_NOT_CONFIGURED",
+    );
+  }
 
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     throw configurationError(

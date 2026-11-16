@@ -73,8 +73,17 @@ test("rejects verification URL generation when no URL configuration exists", () 
   );
 });
 
-test("rejects non-http verification URL configuration", () => {
+test("rejects non-http and malformed verification URL configuration", () => {
   process.env.EMAIL_VERIFICATION_URL = "javascript:alert(1)";
+
+  assert.throws(
+    () => emailService.buildVerificationUrl("raw-token"),
+    (error) =>
+      error.code === "EMAIL_VERIFICATION_URL_NOT_CONFIGURED" &&
+      error.statusCode === 503,
+  );
+
+  process.env.EMAIL_VERIFICATION_URL = "not a valid url";
 
   assert.throws(
     () => emailService.buildVerificationUrl("raw-token"),

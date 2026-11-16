@@ -3,6 +3,19 @@ const mongoose = require("mongoose");
 const USER_ROLES = Object.freeze(["jobseeker", "hr", "admin"]);
 const USER_STATUSES = Object.freeze(["active", "suspended"]);
 
+const isValidWebsite = (value) => {
+    if (value === undefined || value === null || value === "") {
+        return true;
+    }
+
+    try {
+        const parsed = new URL(value);
+        return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch (error) {
+        return false;
+    }
+};
+
 const userSchema = new mongoose.Schema({
     name: { type: String, required: [true, "Please provide name"], trim: true },
     email: {
@@ -32,6 +45,20 @@ const userSchema = new mongoose.Schema({
             message: `Status must be one of: ${USER_STATUSES.join(", ")}`,
         },
         default: "active",
+    },
+    pendingCompanyName: {
+        type: String,
+        trim: true,
+        maxlength: [150, "Company name must not exceed 150 characters"],
+    },
+    pendingCompanyWebsite: {
+        type: String,
+        trim: true,
+        maxlength: [2048, "Website must not exceed 2048 characters"],
+        validate: {
+            validator: isValidWebsite,
+            message: "Website must be a valid http or https URL",
+        },
     },
 });
 

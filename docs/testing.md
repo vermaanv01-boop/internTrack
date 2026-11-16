@@ -31,7 +31,11 @@ The test command is `node --test tests/*.test.js`. Node executes each test file 
 
 | Suite | Focus |
 | --- | --- |
+| `adminAuthorization.test.js` | Database-backed admin guard, role-claim escalation denial, inactive/deleted admin rejection |
+| `adminBootstrap.test.js` | Admin validation, hashing, server-owned fields, duplicate/update safeguards, safe output |
+| `adminCli.test.js` | CLI argument parsing, stdin password handling, TTY fail-closed behavior, safe errors |
 | `analytics.test.js` | Auth, user-scoped aggregation, zero-data contract, calculations, trend, errors |
+| `auditLog.test.js` | Audit defaults, required fields, indexes, metadata sanitization, circular/depth handling |
 | `applications.test.js` | Auth, create/defaults/validation, list filters/pagination/sort, CRUD ownership |
 | `authorizationMiddleware.test.js` | Database-backed auth, platform/company RBAC, verification guard, escalation and cross-company denial |
 | `e2eIntegration.test.js` | Authentication lifecycle and application CRUD/isolation |

@@ -425,6 +425,7 @@ test("verifies an HR email, onboards the owner company, and issues a post-verifi
   assert.equal(companies.length, 1);
   assert.equal(memberships.length, 1);
   assert.equal(companies[0].website, "https://acme.example.com");
+  assert.equal(companies[0].emailDomain, "example.com");
   assert.equal(String(memberships[0].company), String(companies[0]._id));
   assert.equal(String(memberships[0].user), String(users[0]._id));
   assert.ok(tokens[0].consumedAt);

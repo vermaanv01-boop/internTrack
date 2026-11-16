@@ -8,6 +8,7 @@ const buildActiveUser = ({
   ...overrides
 } = {}) => ({
   _id: id,
+  id: String(id),
   name: "Test User",
   email: "test-user@example.com",
   role,

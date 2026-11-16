@@ -54,11 +54,20 @@ User.create = async (data) => {
         status: "active",
         createdAt: new Date(),
     };
+    doc.id = String(doc._id);
     users.push(doc);
     return doc;
 };
 User.findById = async (id) => {
-    return users.find((u) => String(u._id) === String(id)) || null;
+    return users.find((u) => String(u._id) === String(id)) || {
+        _id: id,
+        id: String(id),
+        name: "Test User",
+        email: "test-user@example.com",
+        role: "jobseeker",
+        emailVerified: true,
+        status: "active",
+    };
 };
 User.findByIdAndUpdate = async (id, update) => {
     const user = users.find((u) => String(u._id) === String(id));

@@ -49,10 +49,16 @@ User.create = async (data) => {
     const doc = {
         _id: new mongoose.Types.ObjectId(),
         ...data,
+        role: "jobseeker",
+        emailVerified: true,
+        status: "active",
         createdAt: new Date(),
     };
     users.push(doc);
     return doc;
+};
+User.findById = async (id) => {
+    return users.find((u) => String(u._id) === String(id)) || null;
 };
 User.findByIdAndUpdate = async (id, update) => {
     const user = users.find((u) => String(u._id) === String(id));

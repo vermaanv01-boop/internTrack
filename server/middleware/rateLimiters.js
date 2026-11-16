@@ -43,8 +43,31 @@ const sensitiveActionLimiter = createRateLimiter({
     message: "Too many requests. Please try again later.",
 });
 
+const emailVerificationLimiter = createRateLimiter({
+    windowMs: parsePositiveInteger(
+        process.env.EMAIL_VERIFICATION_RATE_LIMIT_WINDOW_MS,
+        15 * 60 * 1000,
+    ),
+    max: parsePositiveInteger(process.env.EMAIL_VERIFICATION_RATE_LIMIT_MAX, 20),
+    message: "Too many verification attempts. Please try again later.",
+});
+
+const resendVerificationLimiter = createRateLimiter({
+    windowMs: parsePositiveInteger(
+        process.env.EMAIL_VERIFICATION_RESEND_RATE_LIMIT_WINDOW_MS,
+        15 * 60 * 1000,
+    ),
+    max: parsePositiveInteger(
+        process.env.EMAIL_VERIFICATION_RESEND_RATE_LIMIT_MAX,
+        5,
+    ),
+    message: "Too many verification email requests. Please try again later.",
+});
+
 module.exports = {
     authLimiter,
     sensitiveActionLimiter,
+    emailVerificationLimiter,
+    resendVerificationLimiter,
     createRateLimiter,
 };

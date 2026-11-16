@@ -10,6 +10,7 @@ const resumeRoutes = require("./routes/resumeRoutes");
 const matchingRoutes = require("./routes/matchingRoutes");
 const interviewPrepRoutes = require("./routes/interviewPrepRoutes");
 const healthRoutes = require("./routes/healthRoutes");
+const hrAuthRoutes = require("./routes/hrAuthRoutes");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
 const { requestLogger } = require("./middleware/requestLogger");
 const logger = require("./utils/logger");
@@ -66,6 +67,7 @@ const createApp = () => {
 
     app.use("/api/health", healthRoutes);
     app.use("/api/users", userRoutes);
+    app.use("/api/hr/auth", hrAuthRoutes);
     app.use("/api/applications", applicationRoutes);
     app.use("/api/analytics", analyticsRoutes);
     app.use("/api/resumes", resumeRoutes);

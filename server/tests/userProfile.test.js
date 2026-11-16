@@ -13,6 +13,9 @@ process.env.SENSITIVE_RATE_LIMIT_MAX = "1000";
 const User = require("../models/userModel");
 const userRoutes = require("../routes/userRoutes");
 const { errorHandler } = require("../middleware/errorHandler");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 
 const app = express();
 app.use(express.json());

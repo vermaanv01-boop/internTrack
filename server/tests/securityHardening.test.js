@@ -19,6 +19,9 @@ const { createRateLimiter } = require("../middleware/rateLimiters");
 const logger = require("../utils/logger");
 const User = require("../models/userModel");
 const userRoutes = require("../routes/userRoutes");
+const { installAuthUserMock } = require("./helpers/authUserMock");
+
+installAuthUserMock(User);
 
 const originalUserMethods = {
     findOne: User.findOne,

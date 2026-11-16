@@ -30,6 +30,7 @@ const companyMemberSchema = new mongoose.Schema(
         },
         status: {
             type: String,
+            required: [true, "Company member status is required"],
             enum: {
                 values: COMPANY_MEMBER_STATUSES,
                 message: `Company member status must be one of: ${COMPANY_MEMBER_STATUSES.join(", ")}`,

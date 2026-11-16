@@ -105,6 +105,8 @@ const requireRole = (...roles) => {
   };
 };
 
+const requireAdmin = requireRole("admin");
+
 const requireVerified = (req, res, next) => {
   if (!req.user) {
     return unauthorized(res, "Not authorized, authentication required");

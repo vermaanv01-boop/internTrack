@@ -133,7 +133,10 @@ const provisionAdmin = async (input = {}, options = {}) => {
         }
 
         const fields = await buildAdminFields(data, hashPassword);
-        const admin = await UserModel.create(fields);
+        const admin = await UserModel.create({
+            ...fields,
+            email: data.email,
+        });
 
         return {
             created: true,

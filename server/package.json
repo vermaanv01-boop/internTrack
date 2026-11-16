@@ -6,7 +6,9 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "migrate:users": "node migrations/001-add-user-role-foundation.js",
+    "migrate:users:dry": "node migrations/001-add-user-role-foundation.js --dry-run"
   },
   "keywords": [],
   "author": "",

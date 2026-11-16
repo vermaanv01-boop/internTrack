@@ -2,6 +2,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
+
+dotenv.config();
+
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
@@ -14,8 +17,6 @@ const hrAuthRoutes = require("./routes/hrAuthRoutes");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
 const { requestLogger } = require("./middleware/requestLogger");
 const logger = require("./utils/logger");
-
-dotenv.config();
 
 const normalizeOrigin = (origin) => origin.trim().replace(/\/+$/, "");
 

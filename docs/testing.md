@@ -39,10 +39,12 @@ The test command is `node --test tests/*.test.js`. Node executes each test file 
 | `matching.test.js` | Matching analysis contract, validation, snapshots, local scoring behavior |
 | `matchingHistory.test.js` | Matching history filters, sorting, detail/delete ownership, immutability |
 | `resume.test.js` | Upload validation, extraction, versions, activation, download, cleanup |
+| `roleFoundationModels.test.js` | User/Company/CompanyMember/token defaults, enums, references, indexes, token lifecycle |
 | `securityHardening.test.js` | Security headers, error envelopes, rate limiting, auth hardening, redaction |
 | `userProfile.test.js` | Profile update auth/ownership/validation, hashing, privilege-field injection, login token shape |
+| `userRoleMigration.test.js` | Migration defaults, dry-run, explicit-value preservation, idempotency, failure logging |
 
-Current result: **112 passing tests**, including **25 newly added regression tests** in the three suites introduced before role work.
+Current result: **123 passing tests**, including **11 model/migration tests** added for the three-role database foundation and **25 regression tests** added before role work.
 
 ## Coverage Notes
 
@@ -55,7 +57,7 @@ Current result: **112 passing tests**, including **25 newly added regression tes
 
 ## Known Limitations
 
-- No real MongoDB integration/e2e tests exist.
+- No real MongoDB integration/e2e tests exist; model indexes and token lifecycle are tested in-process.
 - No browser/e2e tests are configured for the React client.
 - No load, concurrency, or multi-instance JWT revocation tests exist.
-- Current tests describe the job-seeker-only contract; role and company-permission behavior is not implemented or tested.
+- Current API tests still describe the job-seeker-only contract. Role and company-membership models are validated, but no authorization behavior is implemented or tested yet.

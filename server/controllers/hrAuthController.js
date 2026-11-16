@@ -102,7 +102,7 @@ const registerHr = async (req, res, next) => {
     const verification = await issueVerificationToken({ userId: user._id });
 
     try {
-      await sendVerificationEmail({
+      await emailService.sendVerificationEmail({
         to: user.email,
         name: user.name,
         token: verification.token,
@@ -219,7 +219,7 @@ const resendHrVerification = async (req, res, next) => {
     });
 
     try {
-      await sendVerificationEmail({
+      await emailService.sendVerificationEmail({
         to: user.email,
         name: user.name,
         token: verification.token,

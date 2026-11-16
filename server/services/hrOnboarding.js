@@ -38,6 +38,96 @@ const findExistingOwnerCompany = async (user, CompanyMemberModel, CompanyModel) 
   return CompanyModel.findById(membership.company);
 };
 
+const isDuplicateKeyError = (error) => Boolean(error && error.code === 11000);
+
+const activateCompany = async (company, CompanyModel) => {
+  if (company.status === "active") {
+    return company;
+  }
+
+  return CompanyModel.findOneAndUpdate(
+    { _id: company._id },
+    { $set: { status: "active" } },
+    { new: true },
+  );
+};
+
+const upsertCompany = async (slug, defaults, CompanyModel) => {
+  const update = {
+    $set: {
+      status: "active",
+      verificationStatus: "self_registered",
+    },
+    $setOnInsert: defaults,
+  };
+  const options = {
+    new: true,
+    upsert: true,
+    setDefaultsOnInsert: true,
+  };
+
+  try {
+    return await CompanyModel.findOneAndUpdate({ slug }, update, options);
+  } catch (error) {
+    if (!isDuplicateKeyError(error)) {
+      throw error;
+    }
+
+    const existingCompany = await CompanyModel.findOne({ slug });
+
+    if (!existingCompany) {
+      throw error;
+    }
+
+    return CompanyModel.findOneAndUpdate(
+      { _id: existingCompany._id },
+      update,
+      { new: true },
+    );
+  }
+};
+
+const upsertMembership = async (company, user, now, CompanyMemberModel) => {
+  const filter = {
+    company: company._id,
+    user: user._id,
+  };
+  const update = {
+    $set: {
+      role: "owner",
+      status: "active",
+    },
+    $setOnInsert: {
+      joinedAt: now,
+    },
+  };
+  const options = {
+    new: true,
+    upsert: true,
+    setDefaultsOnInsert: true,
+  };
+
+  try {
+    return await CompanyMemberModel.findOneAndUpdate(filter, update, options);
+  } catch (error) {
+    if (!isDuplicateKeyError(error)) {
+      throw error;
+    }
+
+    const existingMembership = await CompanyMemberModel.findOne(filter);
+
+    if (!existingMembership) {
+      throw error;
+    }
+
+    return CompanyMemberModel.findOneAndUpdate(
+      { _id: existingMembership._id },
+      update,
+      { new: true },
+    );
+  }
+};
+
 const onboardHrUser = async ({
   user,
   now = new Date(),
@@ -63,7 +153,9 @@ const onboardHrUser = async ({
     CompanyModel,
   );
 
-  if (!company) {
+  if (company) {
+    company = await activateCompany(company, CompanyModel);
+  } else {
     const slug = buildCompanySlug(user.pendingCompanyName, user._id);
     const companyDefaults = {
       name: user.pendingCompanyName,
@@ -74,42 +166,14 @@ const onboardHrUser = async ({
       companyDefaults.website = user.pendingCompanyWebsite;
     }
 
-    company = await CompanyModel.findOneAndUpdate(
-      { slug },
-      {
-        $set: {
-          status: "active",
-          verificationStatus: "self_registered",
-        },
-        $setOnInsert: companyDefaults,
-      },
-      {
-        new: true,
-        upsert: true,
-        setDefaultsOnInsert: true,
-      },
-    );
+    company = await upsertCompany(slug, companyDefaults, CompanyModel);
   }
 
-  const membership = await CompanyMemberModel.findOneAndUpdate(
-    {
-      company: company._id,
-      user: user._id,
-    },
-    {
-      $set: {
-        role: "owner",
-        status: "active",
-      },
-      $setOnInsert: {
-        joinedAt: now,
-      },
-    },
-    {
-      new: true,
-      upsert: true,
-      setDefaultsOnInsert: true,
-    },
+  const membership = await upsertMembership(
+    company,
+    user,
+    now,
+    CompanyMemberModel,
   );
 
   const verifiedUser = await UserModel.findOneAndUpdate(

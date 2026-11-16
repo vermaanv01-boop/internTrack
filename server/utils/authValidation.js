@@ -3,6 +3,9 @@ const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 254;
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
+const MAX_COMPANY_NAME_LENGTH = 150;
+const MAX_WEBSITE_LENGTH = 2048;
+const MAX_VERIFICATION_TOKEN_LENGTH = 512;
 
 const hasOwn = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
 
@@ -132,6 +135,133 @@ const validateLogin = (body) => {
     return Object.keys(errors).length > 0 ? { errors } : { data };
 };
 
+const parseCompanyName = (value, errors) => {
+    if (value === undefined || value === null || value === "") {
+        errors.companyName = "Company name is required";
+        return undefined;
+    }
+
+    if (typeof value !== "string") {
+        errors.companyName = "Company name must be a string";
+        return undefined;
+    }
+
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+        errors.companyName = "Company name is required";
+        return undefined;
+    }
+
+    if (trimmed.length > MAX_COMPANY_NAME_LENGTH) {
+        errors.companyName = `Company name must not exceed ${MAX_COMPANY_NAME_LENGTH} characters`;
+        return undefined;
+    }
+
+    return trimmed;
+};
+
+const parseCompanyWebsite = (value, errors) => {
+    if (value === undefined || value === null || value === "") {
+        return undefined;
+    }
+
+    if (typeof value !== "string") {
+        errors.companyWebsite = "Company website must be a string";
+        return undefined;
+    }
+
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+        return undefined;
+    }
+
+    if (trimmed.length > MAX_WEBSITE_LENGTH) {
+        errors.companyWebsite = `Company website must not exceed ${MAX_WEBSITE_LENGTH} characters`;
+        return undefined;
+    }
+
+    try {
+        const parsed = new URL(trimmed);
+
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+            throw new Error("unsupported protocol");
+        }
+    } catch (error) {
+        errors.companyWebsite = "Company website must be a valid http or https URL";
+        return undefined;
+    }
+
+    return trimmed;
+};
+
+const validateHrRegistration = (body) => {
+    const bodyError = ensureBodyObject(body);
+
+    if (bodyError) {
+        return { errors: bodyError };
+    }
+
+    const errors = {};
+    const data = {
+        name: parseName(body.name, errors, true),
+        email: parseEmail(body.email, errors, true),
+        password: parsePassword(body.password, errors, true),
+        companyName: parseCompanyName(body.companyName, errors),
+        companyWebsite: parseCompanyWebsite(body.companyWebsite, errors),
+    };
+
+    return Object.keys(errors).length > 0 ? { errors } : { data };
+};
+
+const validateEmailVerification = (body) => {
+    const bodyError = ensureBodyObject(body);
+
+    if (bodyError) {
+        return { errors: bodyError };
+    }
+
+    if (body.token === undefined || body.token === null || body.token === "") {
+        return { errors: { token: "Verification token is required" } };
+    }
+
+    if (typeof body.token !== "string") {
+        return { errors: { token: "Verification token must be a string" } };
+    }
+
+    const token = body.token.trim();
+
+    if (!token) {
+        return { errors: { token: "Verification token is required" } };
+    }
+
+    if (token.length > MAX_VERIFICATION_TOKEN_LENGTH) {
+        return {
+            errors: {
+                token: `Verification token must not exceed ${MAX_VERIFICATION_TOKEN_LENGTH} characters`,
+            },
+        };
+    }
+
+    return { data: { token } };
+};
+
+const validateResendVerification = (body) => {
+    const bodyError = ensureBodyObject(body);
+
+    if (bodyError) {
+        return { errors: bodyError };
+    }
+
+    const errors = {};
+    const data = {
+        email: parseEmail(body.email, errors, true),
+    };
+
+    return Object.keys(errors).length > 0 ? { errors } : { data };
+};
+
 const validateUserUpdate = (body) => {
     const bodyError = ensureBodyObject(body);
 
@@ -181,4 +311,7 @@ module.exports = {
     validateRegistration,
     validateLogin,
     validateUserUpdate,
+    validateHrRegistration,
+    validateEmailVerification,
+    validateResendVerification,
 };
